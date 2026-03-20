@@ -283,12 +283,46 @@
       background-color: rgba(59,130,246,0.15);
       color: var(--color-text-primary);
     }
-    /* After a pair is successfully matched */
-    .match-item.matched {
+    /* matched is always non-clickable */
+    .match-item.matched { cursor: default; }
+
+    /*
+     * After submit — correct pairs turn green (pair-N classes are stripped first).
+     * During selection the color comes from .pair-N classes below.
+     */
+    .match-item.matched:not([class*="pair-"]) {
       border-color: var(--color-success);
       background-color: var(--color-success-bg);
       color: #bbf7d0;
-      cursor: default;
+    }
+
+    /*
+     * Per-pair colors — each matched pair gets a distinct color so the student
+     * can visually trace which left item connects to which right item.
+     */
+    .match-item.pair-0, .match-pair-row.pair-0 .match-pair-left,
+    .match-pair-row.pair-0 .match-pair-right, .match-pair-row.pair-0 .match-pair-arrow {
+      border-color: #3b82f6 !important;
+      background-color: rgba(59,130,246,0.15) !important;
+      color: #93c5fd !important;
+    }
+    .match-item.pair-1, .match-pair-row.pair-1 .match-pair-left,
+    .match-pair-row.pair-1 .match-pair-right, .match-pair-row.pair-1 .match-pair-arrow {
+      border-color: #8b5cf6 !important;
+      background-color: rgba(139,92,246,0.15) !important;
+      color: #c4b5fd !important;
+    }
+    .match-item.pair-2, .match-pair-row.pair-2 .match-pair-left,
+    .match-pair-row.pair-2 .match-pair-right, .match-pair-row.pair-2 .match-pair-arrow {
+      border-color: #f59e0b !important;
+      background-color: rgba(245,158,11,0.15) !important;
+      color: #fcd34d !important;
+    }
+    .match-item.pair-3, .match-pair-row.pair-3 .match-pair-left,
+    .match-pair-row.pair-3 .match-pair-right, .match-pair-row.pair-3 .match-pair-arrow {
+      border-color: #10b981 !important;
+      background-color: rgba(16,185,129,0.15) !important;
+      color: #6ee7b7 !important;
     }
     /* After submit — wrong pairing */
     .match-item.wrong {
@@ -296,7 +330,9 @@
       background-color: var(--color-error-bg);
       color: #fecaca;
     }
-    .match-item.disabled { cursor: default; opacity: 0.6; }
+    /* Disabled but not yet matched — dim it; matched items keep full color */
+    .match-item.disabled:not(.matched) { cursor: default; opacity: 0.6; }
+    .match-item.matched.disabled { cursor: default; }
 
     /* Paired items show a connector line between them */
     .match-pairs-display {
@@ -557,6 +593,8 @@
     let currentQ      = null;  /* The parsed question object currently displayed */
     let selectedLeft  = null;  /* For matching: the left item the student clicked first */
     let pairs         = {};    /* For matching: completed pairs { leftItem: rightItem } */
+    let pairColors    = {};    /* For matching: which color index each left item got */
+    let pairCount     = 0;     /* Increments with each completed pair to pick the next color */
 
     /* =============================================
        INIT
@@ -716,6 +754,8 @@ IMPORTANT: "steps" must be in the correct order. "shuffled" must be the same ste
       /* Reset state */
       selectedLeft = null;
       pairs        = {};
+      pairColors   = {};
+      pairCount    = 0;
 
       document.getElementById('questionCount').textContent = 'Question ' + questionNum;
       document.getElementById('topicLabel').textContent    = selectedTopic;
@@ -801,18 +841,23 @@ IMPORTANT: "steps" must be in the correct order. "shuffled" must be the same ste
       if (el.classList.contains('matched') || el.classList.contains('disabled')) return;
 
       /* Record the pair */
-      const leftVal  = selectedLeft.dataset.val;
-      const rightVal = el.dataset.val;
-      pairs[leftVal] = rightVal;
+      const leftVal   = selectedLeft.dataset.val;
+      const rightVal  = el.dataset.val;
+      pairs[leftVal]  = rightVal;
 
-      /* Mark both items as matched */
+      /* Assign a color to this pair (cycles through 4 distinct colors) */
+      const colorIdx      = pairCount % 4;
+      pairColors[leftVal] = colorIdx;
+      pairCount++;
+
+      /* Mark both items as matched and apply the pair color */
       selectedLeft.classList.remove('selected');
-      selectedLeft.classList.add('matched', 'disabled');
-      el.classList.add('matched', 'disabled');
+      selectedLeft.classList.add('matched', 'disabled', `pair-${colorIdx}`);
+      el.classList.add('matched', 'disabled', `pair-${colorIdx}`);
       selectedLeft = null;
 
       /* Show the pair in the pairs display area */
-      showPair(leftVal, rightVal);
+      showPair(leftVal, rightVal, colorIdx);
 
       /* Auto-enable submit once all pairs are made */
       if (Object.keys(pairs).length === q.left.length) {
@@ -820,12 +865,14 @@ IMPORTANT: "steps" must be in the correct order. "shuffled" must be the same ste
       }
     }
 
-    function showPair(left, right) {
+    function showPair(left, right, colorIdx) {
       const display = document.getElementById('matchPairsDisplay');
       display.classList.remove('hidden');
 
+      /* Store a reference so we can find this row again on submit */
       const row = document.createElement('div');
-      row.className = 'match-pair-row';
+      row.className       = `match-pair-row pair-${colorIdx}`;
+      row.dataset.leftVal = left;
       row.innerHTML = `
         <span class="match-pair-left">${left}</span>
         <span class="match-pair-arrow">→</span>
@@ -921,9 +968,15 @@ IMPORTANT: "steps" must be in the correct order. "shuffled" must be the same ste
         const correct   = q.correct[leftVal];
         const isCorrect = rightVal === correct;
 
-        /* Find the matching right item and colour it */
+        /* Find the matching right item */
         const rightEl = [...document.querySelectorAll('#matchRight .match-item')]
           .find(r => r.dataset.val === rightVal);
+
+        /* Strip per-pair colors before applying final result colors */
+        [0,1,2,3].forEach(i => {
+          el.classList.remove(`pair-${i}`);
+          if (rightEl) rightEl.classList.remove(`pair-${i}`);
+        });
 
         if (isCorrect) {
           el.classList.add('matched');
