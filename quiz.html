@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Cert Prep — CompTIA practice questions powered by AI." />
+  <title>Quiz — Cert Prep by the Cyber Ninja</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =============================================
+       DESIGN SYSTEM — same tokens as index.html
+       Dark theme throughout.
+    ============================================= */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --color-primary:        #3b82f6;
+      --color-primary-hover:  #2563eb;
+      --color-bg:             #000000;
+      --color-surface:        #18181b;
+      --color-surface-hover:  #1f1f23;
+      --color-text-primary:   #fafafa;
+      --color-text-secondary: #a1a1aa;
+      --color-border:         #27272a;
+      --color-success:        #16a34a;
+      --color-success-bg:     rgba(22, 163, 74, 0.15);
+      --color-error:          #dc2626;
+      --color-error-bg:       rgba(220, 38, 38, 0.15);
+      --font-base: 'DM Sans', sans-serif;
+      --radius-card:   12px;
+      --radius-button:  8px;
+      --radius-badge:   6px;
+    }
+
+    body {
+      font-family: var(--font-base);
+      background-color: var(--color-bg);
+      color: var(--color-text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* =============================================
+       HEADER — identical to index.html
+    ============================================= */
+    .site-header {
+      background-color: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--color-border);
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 72px;
+      display: flex;
+      align-items: center;
+    }
+
+    .header-inner {
+      max-width: 1000px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .logo-img {
+      height: 90px;
+      width: auto;
+      display: block;
+      margin-top: -4px;
+    }
+
+    .logo-divider {
+      width: 1px;
+      height: 28px;
+      background-color: var(--color-border);
+      margin: 0 14px;
+      flex-shrink: 0;
+    }
+
+    .logo-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #fafafa;
+      line-height: 1;
+    }
+
+    /* =============================================
+       MAIN CONTENT WRAPPER
+    ============================================= */
+    .main-content {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 16px 80px;
+    }
+
+    @media (min-width: 640px) {
+      .main-content { padding: 52px 24px 80px; }
+    }
+
+    /* =============================================
+       EXAM BANNER
+       Shows the exam name and current score at the top.
+    ============================================= */
+    .exam-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .exam-label {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .exam-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: var(--radius-badge);
+      align-self: flex-start;
+    }
+
+    /* Colour variants matching index.html */
+    .badge-core1 { background: rgba(59,130,246,0.15); color: #3b82f6; }
+    .badge-core2 { background: rgba(139,92,246,0.15);  color: #8b5cf6; }
+    .badge-net   { background: rgba(16,185,129,0.15);  color: #10b981; }
+    .badge-sec   { background: rgba(245,158,11,0.15);  color: #f59e0b; }
+
+    .exam-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    /* Score pill — shows "3 / 5 correct" */
+    .score-display {
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-badge);
+      padding: 8px 16px;
+      font-size: 0.88rem;
+      color: var(--color-text-secondary);
+      white-space: nowrap;
+    }
+
+    .score-display span {
+      color: var(--color-text-primary);
+      font-weight: 700;
+    }
+
+    /* =============================================
+       SHARED CARD STYLE
+       Used for topic selector, question, and feedback.
+    ============================================= */
+    .card {
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-card);
+      padding: 28px 24px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.4);
+    }
+
+    @media (min-width: 640px) {
+      .card { padding: 36px 32px; }
+    }
+
+    /* =============================================
+       TOPIC SELECTOR
+       The first thing the student sees — pick a topic
+       from the official CompTIA exam domains.
+    ============================================= */
+    .section-heading {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .section-sub {
+      font-size: 0.88rem;
+      color: var(--color-text-secondary);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    /* Grid of topic buttons */
+    .topic-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    @media (min-width: 480px) {
+      .topic-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* Each topic is a button the student clicks to select */
+    .topic-btn {
+      background-color: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-button);
+      padding: 12px 16px;
+      color: var(--color-text-secondary);
+      font-family: var(--font-base);
+      font-size: 0.88rem;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s, background-color 0.15s;
+      min-height: 44px;
+    }
+
+    .topic-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-text-primary);
+    }
+
+    /* When a topic is selected, highlight it */
+    .topic-btn.selected {
+      border-color: var(--color-primary);
+      background-color: rgba(59,130,246,0.1);
+      color: var(--color-text-primary);
+      font-weight: 700;
+    }
+
+    /* =============================================
+       PRIMARY ACTION BUTTON (Start Quiz / Next Question)
+    ============================================= */
+    .btn-primary {
+      display: block;
+      width: 100%;
+      padding: 14px 20px;
+      background-color: var(--color-primary);
+      color: #fff;
+      font-family: var(--font-base);
+      font-size: 1rem;
+      font-weight: 700;
+      text-align: center;
+      border: none;
+      border-radius: var(--radius-button);
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+      min-height: 44px;
+    }
+
+    .btn-primary:hover  { background-color: var(--color-primary-hover); }
+    .btn-primary:active { transform: scale(0.98); }
+
+    /* Disabled state — greyed out when no topic is selected */
+    .btn-primary:disabled {
+      background-color: var(--color-border);
+      color: var(--color-text-secondary);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* =============================================
+       LOADING STATE
+       Shown while the API call is in progress.
+    ============================================= */
+    .loading-card {
+      text-align: center;
+      padding: 60px 24px;
+    }
+
+    /* Spinning circle animation */
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--color-border);
+      border-top-color: var(--color-primary);
+      border-radius: 50%;
+      /* animation: spin 0.8s linear infinite — spins the element forever */
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    /* @keyframes defines what the animation does.
+       "spin" rotates the element from 0° to 360° */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      color: var(--color-text-secondary);
+      font-size: 0.95rem;
+    }
+
+    /* =============================================
+       QUESTION CARD
+    ============================================= */
+    /* Progress line at the top — "Question 3 of 10" */
+    .question-meta {
+      font-size: 0.8rem;
+      color: var(--color-text-secondary);
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .question-text {
+      font-size: 1.05rem;
+      line-height: 1.65;
+      margin-bottom: 24px;
+      font-weight: 700;
+    }
+
+    /* The four answer buttons (A, B, C, D) */
+    .answer-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .answer-btn {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background-color: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-button);
+      padding: 14px 16px;
+      color: var(--color-text-primary);
+      font-family: var(--font-base);
+      font-size: 0.92rem;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.15s, background-color 0.15s;
+      min-height: 44px;
+      line-height: 1.5;
+    }
+
+    .answer-btn:hover:not(:disabled) {
+      border-color: var(--color-primary);
+      background-color: rgba(59,130,246,0.08);
+    }
+
+    /* The letter label (A, B, C, D) inside each answer button */
+    .answer-letter {
+      font-weight: 700;
+      color: var(--color-text-secondary);
+      flex-shrink: 0; /* Don't let the letter get squished */
+      font-size: 0.85rem;
+      margin-top: 1px;
+    }
+
+    /* After the student answers — colour the correct answer green */
+    .answer-btn.correct {
+      border-color: var(--color-success);
+      background-color: var(--color-success-bg);
+    }
+
+    .answer-btn.correct .answer-letter { color: var(--color-success); }
+
+    /* Colour the wrong answer red */
+    .answer-btn.wrong {
+      border-color: var(--color-error);
+      background-color: var(--color-error-bg);
+    }
+
+    .answer-btn.wrong .answer-letter { color: var(--color-error); }
+
+    /* Grey out all buttons after an answer is chosen */
+    .answer-btn:disabled {
+      cursor: default;
+      opacity: 0.7;
+    }
+
+    .answer-btn.correct:disabled,
+    .answer-btn.wrong:disabled { opacity: 1; }
+
+    /* =============================================
+       FEEDBACK SECTION
+       Shown below the question after the student answers.
+    ============================================= */
+    .feedback {
+      margin-top: 20px;
+      padding: 16px 18px;
+      border-radius: var(--radius-button);
+      font-size: 0.92rem;
+      line-height: 1.6;
+      display: none; /* Hidden until an answer is selected */
+    }
+
+    .feedback.correct {
+      background-color: var(--color-success-bg);
+      border: 1px solid var(--color-success);
+      color: #bbf7d0; /* Light green text */
+      display: block;
+    }
+
+    .feedback.wrong {
+      background-color: var(--color-error-bg);
+      border: 1px solid var(--color-error);
+      color: #fecaca; /* Light red text */
+      display: block;
+    }
+
+    .feedback-label {
+      font-weight: 700;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+
+    /* =============================================
+       NEXT QUESTION BUTTON
+       Appears after the student answers.
+    ============================================= */
+    .btn-next {
+      margin-top: 20px;
+      display: none; /* Hidden until an answer is selected */
+    }
+
+    .btn-next.visible { display: block; }
+
+    /* When retrying after a wrong answer, use the error colour
+       so the student can see at a glance they need to try again */
+    .btn-next[data-retrying="true"] {
+      background-color: var(--color-error);
+    }
+    .btn-next[data-retrying="true"]:hover {
+      background-color: #b91c1c;
+    }
+
+    /* =============================================
+       HIDDEN UTILITY CLASS
+       JavaScript adds/removes this to show and hide sections.
+       display: none removes the element from the layout entirely.
+    ============================================= */
+    .hidden { display: none !important; }
+
+    /* =============================================
+       FOOTER
+    ============================================= */
+    .site-footer {
+      border-top: 1px solid var(--color-border);
+      padding: 24px 20px;
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--color-text-secondary);
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="index.html" class="logo" aria-label="Cert Prep — home">
+        <img src="logo.png" alt="" class="logo-img" aria-hidden="true" />
+        <span class="logo-divider" aria-hidden="true"></span>
+        <span class="logo-name">Cert Prep</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="main-content">
+
+    <!-- EXAM BANNER — filled in by JavaScript once we know which exam -->
+    <div class="exam-banner">
+      <div class="exam-label">
+        <span id="examBadge" class="exam-badge"></span>
+        <h1 id="examTitle" class="exam-title"></h1>
+      </div>
+      <div class="score-display">
+        Score: <span id="scoreCorrect">0</span> / <span id="scoreTotal">0</span>
+      </div>
+    </div>
+
+    <!--
+      TOPIC SELECTOR
+      Shown first. JavaScript populates the topic buttons based on the exam.
+      Hidden once the student starts the quiz.
+    -->
+    <div id="topicSection" class="card">
+      <p class="section-heading">Choose a topic</p>
+      <p class="section-sub">
+        Select a domain from the official CompTIA exam objectives.
+        Each question will be generated specifically for that topic.
+      </p>
+      <div id="topicGrid" class="topic-grid">
+        <!-- Topic buttons are injected here by JavaScript -->
+      </div>
+      <button id="startBtn" class="btn-primary" disabled onclick="startQuiz()">
+        Start Quiz
+      </button>
+    </div>
+
+    <!--
+      LOADING CARD
+      Shown while waiting for the API to return a question.
+    -->
+    <div id="loadingSection" class="card loading-card hidden">
+      <div class="spinner"></div>
+      <p class="loading-text">Generating your question...</p>
+    </div>
+
+    <!--
+      QUESTION CARD
+      Shown when a question has loaded. Hidden at first.
+    -->
+    <div id="questionSection" class="card hidden">
+      <div class="question-meta">
+        <span id="questionCount">Question 1</span>
+        <span id="topicLabel"></span>
+      </div>
+
+      <p id="questionText" class="question-text"></p>
+
+      <!-- Answer buttons — filled in by JavaScript -->
+      <div id="answerGrid" class="answer-grid"></div>
+
+      <!-- Feedback box — shown after the student picks an answer -->
+      <div id="feedback" class="feedback">
+        <p class="feedback-label" id="feedbackLabel"></p>
+        <p id="feedbackText"></p>
+      </div>
+
+      <!-- Next Question button — appears after answering -->
+      <button id="nextBtn" class="btn-primary btn-next" onclick="nextQuestion()">
+        Next Question
+      </button>
+    </div>
+
+  </main>
+
+  <script>
+    /*
+     * =============================================
+     * EXAM CONFIGURATION
+     * Each exam has a badge style, display name, and list of
+     * official CompTIA objective domains. These are the topics
+     * students can pick from.
+     * =============================================
+     */
+    const EXAMS = {
+      core1: {
+        badge:    'Core 1',
+        badgeClass: 'badge-core1',
+        title:    'A+ Core 1 — 220-1201',
+        topics: [
+          'Mobile Devices',
+          'Networking Fundamentals',
+          'Hardware',
+          'Virtualization & Cloud Computing',
+          'Hardware & Network Troubleshooting',
+        ],
+      },
+      core2: {
+        badge:    'Core 2',
+        badgeClass: 'badge-core2',
+        title:    'A+ Core 2 — 220-1202',
+        topics: [
+          'Operating Systems',
+          'Security',
+          'Software Troubleshooting',
+          'Operational Procedures',
+        ],
+      },
+      netplus: {
+        badge:    'Network+',
+        badgeClass: 'badge-net',
+        title:    'Network+ — N10-009',
+        topics: [
+          'Networking Concepts',
+          'Network Implementation',
+          'Network Operations',
+          'Network Security',
+          'Network Troubleshooting',
+        ],
+      },
+      secplus: {
+        badge:    'Security+',
+        badgeClass: 'badge-sec',
+        title:    'Security+ — SY0-701',
+        topics: [
+          'General Security Concepts',
+          'Threats, Vulnerabilities & Mitigations',
+          'Security Architecture',
+          'Security Operations',
+          'Security Program Management & Oversight',
+        ],
+      },
+    };
+
+    /*
+     * The URL of your Cloudflare Worker proxy.
+     * All API calls go here — never directly to Anthropic.
+     */
+    const WORKER_URL = 'https://comptidda.kemar-k-hinds.workers.dev';
+
+    /*
+     * =============================================
+     * STATE
+     * These variables track what's happening in the quiz session.
+     * =============================================
+     */
+    let currentExam   = null;  // The exam config object (from EXAMS above)
+    let selectedTopic = null;  // Which topic the student picked
+    let questionNum   = 0;     // How many questions have been asked
+    let scoreCorrect  = 0;     // How many the student got right
+    let scoreTotal    = 0;     // Total questions answered
+
+    /*
+     * =============================================
+     * INIT — runs when the page loads
+     * Reads the ?exam= URL parameter and sets everything up.
+     * =============================================
+     */
+    function init() {
+      /*
+       * URLSearchParams lets us read query string values easily.
+       * e.g. quiz.html?exam=core1  →  params.get('exam') === 'core1'
+       */
+      const params = new URLSearchParams(window.location.search);
+      const examKey = params.get('exam');
+
+      /* If the URL has no valid exam param, redirect home */
+      if (!examKey || !EXAMS[examKey]) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      currentExam = EXAMS[examKey];
+
+      /* Fill in the exam badge and title */
+      const badge = document.getElementById('examBadge');
+      badge.textContent  = currentExam.badge;
+      badge.className    = 'exam-badge ' + currentExam.badgeClass;
+      document.getElementById('examTitle').textContent = currentExam.title;
+
+      /* Build the topic buttons */
+      buildTopicGrid();
+    }
+
+    /*
+     * Build the grid of topic buttons from the exam's topic list.
+     * Each button calls selectTopic() when clicked.
+     */
+    function buildTopicGrid() {
+      const grid = document.getElementById('topicGrid');
+      grid.innerHTML = ''; /* Clear any existing buttons */
+
+      currentExam.topics.forEach(topic => {
+        const btn = document.createElement('button');
+        btn.type        = 'button';
+        btn.className   = 'topic-btn';
+        btn.textContent = topic;
+        /* When clicked, call selectTopic and pass this topic string */
+        btn.onclick = () => selectTopic(topic, btn);
+        grid.appendChild(btn);
+      });
+    }
+
+    /* Called when the student clicks a topic button */
+    function selectTopic(topic, clickedBtn) {
+      selectedTopic = topic;
+
+      /* Remove 'selected' class from all topic buttons */
+      document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('selected'));
+
+      /* Add 'selected' to the one that was clicked */
+      clickedBtn.classList.add('selected');
+
+      /* Enable the Start Quiz button now that a topic is chosen */
+      document.getElementById('startBtn').disabled = false;
+    }
+
+    /*
+     * =============================================
+     * START QUIZ
+     * Called when the student clicks "Start Quiz".
+     * Hides the topic selector and fetches the first question.
+     * =============================================
+     */
+    function startQuiz() {
+      if (!selectedTopic) return;
+
+      /* Hide the topic selector */
+      document.getElementById('topicSection').classList.add('hidden');
+
+      questionNum = 0;
+      fetchQuestion();
+    }
+
+    /*
+     * =============================================
+     * FETCH QUESTION
+     * Sends a prompt to your Cloudflare Worker, which forwards
+     * it to the Anthropic API and returns a question in JSON format.
+     * =============================================
+     */
+    async function fetchQuestion() {
+      questionNum++;
+
+      /* Show the loading spinner, hide the question card */
+      show('loadingSection');
+      hide('questionSection');
+
+      /*
+       * Build the prompt.
+       * We ask Claude to return ONLY JSON — no extra words.
+       * The exact JSON shape we need is defined here so we can
+       * reliably parse it in JavaScript.
+       */
+      const prompt = `You are a CompTIA exam question writer. Generate one multiple choice question for the ${currentExam.title} exam about the topic: "${selectedTopic}".
+
+Return ONLY a valid JSON object — no explanation, no markdown, no code block. Use exactly this structure:
+{
+  "question": "The full question text here",
+  "options": {
+    "A": "First option",
+    "B": "Second option",
+    "C": "Third option",
+    "D": "Fourth option"
+  },
+  "correct": "A",
+  "explanation": "A clear explanation of why the correct answer is right and why the others are wrong. Written for a beginner student."
+}`;
+
+      try {
+        /*
+         * fetch() sends an HTTP request and returns a Promise.
+         * "await" pauses here until the response comes back.
+         * This is "async JavaScript" — the page stays responsive
+         * while it waits (doesn't freeze the browser).
+         */
+        const response = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt }),
+        });
+
+        /* Parse the Worker's response as JSON */
+        const data = await response.json();
+
+        /*
+         * The Anthropic API response wraps the text in:
+         * data.content[0].text
+         * That text is the JSON string we asked Claude to return.
+         */
+        const rawText = data.content[0].text;
+
+        /*
+         * Claude sometimes wraps JSON in markdown code blocks like:
+         * ```json { ... } ```
+         * This regex strips those out so we can parse the raw JSON.
+         */
+        const cleaned = rawText.replace(/```json|```/g, '').trim();
+        const question = JSON.parse(cleaned);
+
+        displayQuestion(question);
+
+      } catch (err) {
+        /* If anything goes wrong, show an error in the question area */
+        hide('loadingSection');
+        show('questionSection');
+        document.getElementById('questionText').textContent =
+          'Something went wrong loading the question. Please try again.';
+        console.error('Quiz fetch error:', err);
+      }
+    }
+
+    /*
+     * =============================================
+     * DISPLAY QUESTION
+     * Takes the parsed question object and renders it on the page.
+     * =============================================
+     */
+    function displayQuestion(q) {
+      hide('loadingSection');
+      show('questionSection');
+
+      /* Update meta line */
+      document.getElementById('questionCount').textContent = 'Question ' + questionNum;
+      document.getElementById('topicLabel').textContent    = selectedTopic;
+
+      /* Set the question text */
+      document.getElementById('questionText').textContent = q.question;
+
+      /* Build the four answer buttons */
+      const grid = document.getElementById('answerGrid');
+      grid.innerHTML = '';
+
+      ['A', 'B', 'C', 'D'].forEach(letter => {
+        const btn = document.createElement('button');
+        btn.type      = 'button';
+        btn.className = 'answer-btn';
+
+        /* Each button shows the letter and the option text */
+        btn.innerHTML = `<span class="answer-letter">${letter}</span><span>${q.options[letter]}</span>`;
+
+        /* When clicked, call checkAnswer with the letter and the full question */
+        btn.onclick = () => checkAnswer(letter, q);
+        grid.appendChild(btn);
+      });
+
+      /* Reset feedback and next button */
+      const feedback = document.getElementById('feedback');
+      feedback.className = 'feedback'; /* Remove correct/wrong classes */
+      document.getElementById('nextBtn').classList.remove('visible');
+    }
+
+    /*
+     * =============================================
+     * CHECK ANSWER
+     * Called when the student clicks an answer button.
+     * =============================================
+     */
+    function checkAnswer(chosen, q) {
+      const isCorrect = chosen === q.correct;
+
+      /* Update score */
+      scoreTotal++;
+      if (isCorrect) scoreCorrect++;
+      document.getElementById('scoreCorrect').textContent = scoreCorrect;
+      document.getElementById('scoreTotal').textContent   = scoreTotal;
+
+      /* Disable all answer buttons so the student can't change their answer */
+      const buttons = document.querySelectorAll('.answer-btn');
+      buttons.forEach((btn, index) => {
+        btn.disabled = true;
+        const letter = ['A', 'B', 'C', 'D'][index];
+        if (letter === q.correct) {
+          btn.classList.add('correct'); /* Highlight the correct answer green */
+        } else if (letter === chosen && !isCorrect) {
+          btn.classList.add('wrong');   /* Highlight the student's wrong choice red */
+        }
+      });
+
+      /* Show the feedback explanation */
+      const feedback = document.getElementById('feedback');
+      feedback.className = 'feedback ' + (isCorrect ? 'correct' : 'wrong');
+      document.getElementById('feedbackLabel').textContent = isCorrect ? 'Correct!' : 'Incorrect';
+      document.getElementById('feedbackText').textContent  = q.explanation;
+
+      /*
+       * If the student got it wrong, change the button to "Try Again"
+       * so they get another question on the same topic.
+       * If correct, show the normal "Next Question" button.
+       *
+       * We store whether the last answer was correct on the button itself
+       * using a data attribute, so nextQuestion() knows what to do.
+       */
+      const nextBtn = document.getElementById('nextBtn');
+      if (isCorrect) {
+        nextBtn.textContent          = 'Next Question';
+        nextBtn.dataset.retrying     = 'false';
+      } else {
+        nextBtn.textContent          = 'Try Again on this Topic';
+        nextBtn.dataset.retrying     = 'true';
+      }
+      nextBtn.classList.add('visible');
+    }
+
+    /*
+     * =============================================
+     * NEXT QUESTION
+     * If the student got the last answer wrong (retrying = true),
+     * fetch a new question on the same topic.
+     * If correct, fetch the next question as normal.
+     * Either way, fetchQuestion() handles it — the topic never changes
+     * until the student answers correctly.
+     * =============================================
+     */
+    function nextQuestion() {
+      fetchQuestion();
+    }
+
+    /* ---- Utility helpers ---- */
+    function show(id) { document.getElementById(id).classList.remove('hidden'); }
+    function hide(id) { document.getElementById(id).classList.add('hidden');    }
+
+    /* Run init() as soon as the page loads */
+    init();
+  </script>
+
+  <footer class="site-footer">
+    &copy; <span id="year"></span> K. Hinds &mdash; Cert Prep by the Cyber Ninja. All rights reserved.
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    META TAGS
+    charset: lets the browser display all characters correctly
+    viewport: critical for mobile — without this, phones zoom out to show a
+              "desktop" view instead of a properly scaled mobile layout
+    description: the text shown under your link in Google search results
+  -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Cert Prep by the Cyber Ninja — Free CompTIA A+ and Network+ practice questions for beginners." />
+  <title>Cert Prep by the Cyber Ninja</title>
+
+  <!--
+    GOOGLE FONTS
+    DM Sans is loaded directly from Google's servers — no file to download or host.
+    "display=swap" means the browser shows text immediately in a fallback font
+    while DM Sans loads, so the page never shows a blank white flash.
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =============================================
+       CSS RESET
+       Browsers apply their own default spacing and sizing rules.
+       This block clears them so the page looks consistent
+       in Chrome, Firefox, Safari, and Edge.
+    ============================================= */
+    * {
+      margin: 0;
+      padding: 0;
+      /* box-sizing: border-box means: when you set width: 300px,
+         that 300px INCLUDES any padding and border.
+         Without this, padding would be ADDED on top of the width,
+         making layout maths confusing. */
+      box-sizing: border-box;
+    }
+
+    /* =============================================
+       DESIGN SYSTEM — CSS CUSTOM PROPERTIES
+       Variables stored on :root are available everywhere in the stylesheet.
+       Dark theme: black background, dark card surfaces, light text.
+       To change a colour sitewide, update it here — once — and it updates everywhere.
+    ============================================= */
+    :root {
+      /* --- Colours --- */
+      --color-primary:        #3b82f6; /* Bright blue — buttons, badges, accents */
+      --color-primary-hover:  #2563eb; /* Slightly deeper blue on hover */
+
+      --color-bg:             #000000; /* Pure black — matches logo background */
+      --color-surface:        #18181b; /* Dark card surface — slightly lighter than bg */
+      --color-surface-hover:  #1f1f23; /* Card surface on hover */
+
+      --color-text-primary:   #fafafa; /* Near-white — headings and body text */
+      --color-text-secondary: #a1a1aa; /* Mid-grey — descriptions and hints */
+
+      --color-border:         #27272a; /* Subtle dark border between elements */
+
+      /* --- Accent colours for each exam card badge --- */
+      --accent-core1:         #3b82f6; /* Blue  — A+ Core 1 */
+      --accent-core1-bg:      rgba(59, 130, 246, 0.15);
+      --accent-core2:         #8b5cf6; /* Purple — A+ Core 2 */
+      --accent-core2-bg:      rgba(139, 92, 246, 0.15);
+      --accent-net:           #10b981; /* Green  — Network+ */
+      --accent-net-bg:        rgba(16, 185, 129, 0.15);
+      --accent-sec:           #f59e0b; /* Amber  — Security+ */
+      --accent-sec-bg:        rgba(245, 158, 11, 0.15);
+
+      /* --- Typography --- */
+      --font-base: 'DM Sans', sans-serif;
+
+      /* --- Shape --- */
+      --radius-card:   12px;
+      --radius-button:  8px;
+      --radius-badge:   6px;
+    }
+
+    /* =============================================
+       BODY
+       Sets the global font, background, and text colour.
+       min-height: 100vh ensures the dark background fills
+       the whole screen even when there's little content.
+    ============================================= */
+    body {
+      font-family: var(--font-base);
+      background-color: var(--color-bg);
+      color: var(--color-text-primary);
+      min-height: 100vh;
+      /* Prevents horizontal scrollbars appearing on mobile
+         if anything accidentally overflows */
+      overflow-x: hidden;
+    }
+
+    /* =============================================
+       HEADER
+       Standard app nav bar — logo left, sticky at top.
+       Industry convention: brand always lives on the left
+       because users scan left-to-right.
+    ============================================= */
+    .site-header {
+      background-color: rgba(0, 0, 0, 0.85);
+      /* backdrop-filter: blur adds a frosted-glass effect —
+         page content blurs slightly as it scrolls under the header */
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--color-border);
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 72px; /* Fixed height keeps the header consistent on every page */
+      display: flex;
+      align-items: center;
+    }
+
+    .header-inner {
+      max-width: 1000px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+    }
+
+    /* The logo is a link back to the homepage.
+       display: flex lets the image and text sit side by side. */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 2px;         /* Tight gap — image and text feel like one unit */
+      text-decoration: none;
+      flex-shrink: 0;   /* Don't let flexbox squish the logo on small screens */
+    }
+
+    /* The ninja image — sized to sit cleanly inside the 72px header.
+       Negative margin pulls it up slightly to compensate for the
+       black padding baked into the image file. */
+    .logo-img {
+      height: 90px;
+      width: auto;
+      display: block;
+      margin-top: -4px;
+    }
+
+    /* "CERT PREP" wordmark beside the image */
+    .logo-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #fafafa;
+      line-height: 1;
+    }
+
+    /* Thin coloured divider between image and text — a subtle brand detail */
+    .logo-divider {
+      width: 1px;
+      height: 28px;
+      background-color: var(--color-border);
+      margin: 0 14px;
+      flex-shrink: 0;
+    }
+
+    /* =============================================
+       MAIN CONTENT WRAPPER
+       Centres everything and adds breathing room
+       on the sides so text doesn't touch screen edges.
+       Mobile-first: smaller padding on small screens,
+       larger on bigger screens.
+    ============================================= */
+    .main-content {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 48px 16px 80px; /* Mobile: 16px side padding */
+    }
+
+    /* On screens 640px and wider, increase the side padding */
+    @media (min-width: 640px) {
+      .main-content {
+        padding: 60px 24px 80px;
+      }
+    }
+
+    /* =============================================
+       HERO SECTION
+       The headline and tagline centred at the top.
+    ============================================= */
+    .hero {
+      text-align: center;
+      margin-bottom: 52px;
+    }
+
+    .hero-title {
+      font-size: 2rem; /* Mobile-first: smaller on phones */
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+      margin-bottom: 14px;
+      color: var(--color-text-primary);
+    }
+
+    /* Scale the heading up on larger screens */
+    @media (min-width: 640px) {
+      .hero-title {
+        font-size: 2.6rem;
+      }
+    }
+
+    .hero-tagline {
+      font-size: 1.05rem;
+      color: var(--color-text-secondary);
+      line-height: 1.65;
+      /* max-width: 44ch limits the line length to ~44 characters.
+         ch = the width of the "0" character. Shorter lines are easier to read. */
+      max-width: 44ch;
+      margin: 0 auto;
+    }
+
+    /* =============================================
+       PAGE LAYOUT
+       A+ card sits full-width on top.
+       Network+ and Security+ sit side by side below.
+    ============================================= */
+    .exam-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Bottom row: Network+ and Security+ side by side */
+    .exam-grid-bottom {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    @media (min-width: 600px) {
+      .exam-grid-bottom { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* =============================================
+       A+ COMBINED CARD
+       One card that contains both Core 1 and Core 2
+       as sub-sections inside it.
+    ============================================= */
+    .aplus-card {
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-card);
+      padding: 28px 24px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.4);
+    }
+    @media (min-width: 700px) { .aplus-card { padding: 32px 28px; } }
+
+    /* Header section of the A+ card — badge + title + description */
+    .aplus-header {
+      margin-bottom: 24px;
+    }
+    .aplus-header .card-badge { margin-bottom: 12px; }
+    .aplus-title {
+      font-size: 1.4rem; font-weight: 700; letter-spacing: -0.01em;
+      margin-bottom: 8px;
+    }
+    .aplus-desc {
+      font-size: 0.88rem; color: var(--color-text-secondary); line-height: 1.6;
+    }
+
+    /* Divider between the header and the two sub-sections */
+    .aplus-divider {
+      border: none; border-top: 1px solid var(--color-border); margin-bottom: 22px;
+    }
+
+    /* Sub-grid: Core 1 and Core 2 side by side */
+    .aplus-sub-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    @media (min-width: 560px) {
+      .aplus-sub-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* Each sub-section inside the A+ card */
+    .aplus-sub {
+      background-color: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-button);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .aplus-sub-title {
+      font-size: 1rem; font-weight: 700; margin-bottom: 4px;
+    }
+    .aplus-sub-code {
+      font-size: 0.75rem; color: var(--color-text-secondary);
+      margin-bottom: 10px; opacity: 0.8;
+    }
+    .aplus-sub-desc {
+      font-size: 0.85rem; color: var(--color-text-secondary);
+      line-height: 1.55; flex-grow: 1; margin-bottom: 14px;
+    }
+
+    /* =============================================
+       EXAM CARD
+       Each card uses flexbox in a column direction so we can
+       push the button to the card's bottom with flex-grow.
+    ============================================= */
+    .exam-card {
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-card);
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column; /* Stack children vertically */
+      /* Transition: animate box-shadow and position changes smoothly */
+      transition: box-shadow 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+      /* A very subtle glow so cards stand out from the dark background */
+      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+    }
+
+    /* On desktop, give cards more internal padding */
+    @media (min-width: 700px) {
+      .exam-card {
+        padding: 32px 28px;
+      }
+    }
+
+    /* Lift the card and brighten its background when hovered */
+    .exam-card:hover {
+      background-color: var(--color-surface-hover);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    /* ---- CARD BADGE ----
+       Small pill label in the card's accent colour.
+       Each exam has a different colour to tell them apart at a glance.
+    ---- */
+    .card-badge {
+      display: inline-block; /* Shrink-wraps to the text — doesn't stretch full width */
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: var(--radius-badge);
+      margin-bottom: 18px;
+      align-self: flex-start; /* Don't stretch — stay as wide as the text */
+    }
+
+    /* Badge colour variants — one per exam */
+    .badge-core1 {
+      background-color: var(--accent-core1-bg);
+      color: var(--accent-core1);
+    }
+    .badge-core2 {
+      background-color: var(--accent-core2-bg);
+      color: var(--accent-core2);
+    }
+    .badge-net {
+      background-color: var(--accent-net-bg);
+      color: var(--accent-net);
+    }
+    .badge-sec {
+      background-color: var(--accent-sec-bg);
+      color: var(--accent-sec);
+    }
+
+    /* ---- CARD TITLE ---- */
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 10px;
+      color: var(--color-text-primary);
+    }
+
+    /* ---- CARD DESCRIPTION ----
+       flex-grow: 1 makes this element expand to fill any leftover vertical space.
+       This pushes the button to the bottom of the card, even if one card has
+       more text than another — all buttons line up at the same height.
+    ---- */
+    .card-description {
+      font-size: 0.92rem;
+      color: var(--color-text-secondary);
+      line-height: 1.65;
+      flex-grow: 1;
+      margin-bottom: 24px;
+    }
+
+    /* ---- EXAM NUMBER TAG (e.g. "220-1101") ----
+       The official CompTIA exam code — helps students know exactly
+       which exam the content maps to.
+    ---- */
+    .card-exam-code {
+      font-size: 0.78rem;
+      color: var(--color-text-secondary);
+      margin-bottom: 20px;
+      /* opacity makes it feel like a subtle note, not a headline */
+      opacity: 0.7;
+    }
+
+    /* ---- START STUDYING BUTTON ----
+       Full width of the card.
+       type="button" is important — it stops the browser treating it
+       as a form submit button (which causes a page reload).
+    ---- */
+    .btn-start {
+      display: block;
+      width: 100%;
+      padding: 13px 20px;
+      background-color: var(--color-primary);
+      color: #ffffff;
+      font-family: var(--font-base);
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-align: center;
+      border: none;
+      border-radius: var(--radius-button);
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      /* Minimum tap target of 44px height — Apple and Google both recommend
+         this so the button is easy to tap on a touchscreen */
+      min-height: 44px;
+    }
+
+    .btn-start:hover {
+      background-color: var(--color-primary-hover);
+    }
+
+    /* Give the button a tiny "press" feel on click */
+    .btn-start:active {
+      transform: scale(0.98);
+    }
+
+    /* Each card's button matches the card's accent colour */
+    .btn-core2 {
+      background-color: var(--accent-core2);
+    }
+    .btn-core2:hover {
+      background-color: #7c3aed; /* Darker purple on hover */
+    }
+
+    .btn-net {
+      background-color: var(--accent-net);
+    }
+    .btn-net:hover {
+      background-color: #059669; /* Darker green on hover */
+    }
+
+    .btn-sec {
+      background-color: var(--accent-sec);
+    }
+    .btn-sec:hover {
+      background-color: #d97706; /* Darker amber on hover */
+    }
+
+    /* "Start Studying" becomes a toggle — shows the mode picker below */
+    .btn-start {
+      position: relative;
+    }
+
+    /*
+     * MODE PICKER — revealed after clicking Start Studying.
+     * Hidden by default (max-height: 0, overflow: hidden).
+     * JavaScript adds the .open class to animate it open.
+     * max-height transition creates a smooth expand effect.
+     */
+    .mode-picker {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, margin-top 0.3s ease;
+      margin-top: 0;
+    }
+    .mode-picker.open {
+      max-height: 200px;
+      margin-top: 12px;
+    }
+
+    /* Divider label inside the picker */
+    .mode-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--color-text-secondary);
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    /* The two mode buttons side by side */
+    .mode-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .btn-mode {
+      padding: 11px 10px;
+      border-radius: var(--radius-button);
+      font-family: var(--font-base);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.15s, border-color 0.15s;
+      min-height: 44px;
+      border: 1px solid var(--color-border);
+    }
+
+    /* Multiple choice — filled primary */
+    .btn-mode-mcq {
+      background-color: var(--color-primary);
+      color: #fff;
+      border-color: var(--color-primary);
+    }
+    .btn-mode-mcq:hover { background-color: var(--color-primary-hover); }
+
+    /* PBQ — outlined */
+    .btn-mode-pbq {
+      background-color: transparent;
+      color: var(--color-text-secondary);
+    }
+    .btn-mode-pbq:hover {
+      border-color: var(--color-text-secondary);
+      color: var(--color-text-primary);
+    }
+
+
+    /* =============================================
+       FOOTER
+    ============================================= */
+    .site-footer {
+      border-top: 1px solid var(--color-border);
+      padding: 24px 20px;
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--color-text-secondary);
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!--
+    HEADER
+    Sticky — stays at the top of the screen as the user scrolls.
+    When we add more pages, copy this header block into each .html file.
+  -->
+  <header class="site-header">
+    <div class="header-inner">
+      <!--
+        Logo: ninja image (left) + thin divider + "CERT PREP" wordmark.
+        Wrapped in an <a> tag so clicking anywhere on it goes to the homepage.
+        The ninja image already contains the brand name visually, so the
+        wordmark gives it the short, readable text label every nav bar needs.
+      -->
+      <a href="index.html" class="logo" aria-label="Cert Prep — home">
+        <img src="logo.png" alt="" class="logo-img" aria-hidden="true" />
+        <span class="logo-divider" aria-hidden="true"></span>
+        <span class="logo-name">Cert Prep</span>
+      </a>
+    </div>
+  </header>
+
+  <!--
+    MAIN
+    The <main> tag is a semantic HTML element.
+    "Semantic" means the tag describes what the content IS, not just how it looks.
+    Screen readers (used by visually impaired users) use these tags to navigate pages.
+  -->
+  <main class="main-content">
+
+    <!-- ---- HERO ---- -->
+    <section class="hero">
+      <h1 class="hero-title">Study smarter for your CompTIA exam.</h1>
+      <p class="hero-tagline">Pass your CompTIA exam. One question at a time.</p>
+    </section>
+
+    <div class="exam-grid">
+
+      <!-- A+ COMBINED CARD — one card, two sub-sections inside -->
+      <div class="aplus-card">
+        <div class="aplus-header">
+          <span class="card-badge badge-core1">CompTIA A+</span>
+          <h2 class="aplus-title">A+ Certification</h2>
+          <p class="aplus-desc">
+            Two separate exams — pass both to earn your A+.
+            Choose the exam you want to practise below.
+          </p>
+        </div>
+        <hr class="aplus-divider" />
+        <div class="aplus-sub-grid">
+
+          <!-- CORE 1 SUB-SECTION -->
+          <div class="aplus-sub">
+            <span class="card-badge badge-core1" style="margin-bottom:10px;">Core 1</span>
+            <h3 class="aplus-sub-title">220-1201</h3>
+            <p class="aplus-sub-code">Hardware &bull; Networking &bull; Mobile Devices &bull; Virtualisation</p>
+            <p class="aplus-sub-desc">
+              The physical side of IT — hardware, networking fundamentals,
+              mobile devices, and cloud basics.
+            </p>
+            <button type="button" class="btn-start" onclick="togglePicker(this)">
+              Start Studying
+            </button>
+            <div class="mode-picker">
+              <p class="mode-label">Choose your study mode</p>
+              <div class="mode-buttons">
+                <button type="button" class="btn-mode btn-mode-mcq"
+                  onclick="window.location.href='quiz.html?exam=core1'">Multiple Choice</button>
+                <button type="button" class="btn-mode btn-mode-pbq"
+                  onclick="window.location.href='pbq.html?exam=core1'">Performance-Based</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- CORE 2 SUB-SECTION -->
+          <div class="aplus-sub">
+            <span class="card-badge badge-core2" style="margin-bottom:10px;">Core 2</span>
+            <h3 class="aplus-sub-title">220-1202</h3>
+            <p class="aplus-sub-code">OS &bull; Security &bull; Troubleshooting &bull; Procedures</p>
+            <p class="aplus-sub-desc">
+              The software side — Windows, macOS, Linux, security threats,
+              and software troubleshooting.
+            </p>
+            <button type="button" class="btn-start btn-core2" onclick="togglePicker(this)">
+              Start Studying
+            </button>
+            <div class="mode-picker">
+              <p class="mode-label">Choose your study mode</p>
+              <div class="mode-buttons">
+                <button type="button" class="btn-mode btn-mode-mcq"
+                  onclick="window.location.href='quiz.html?exam=core2'">Multiple Choice</button>
+                <button type="button" class="btn-mode btn-mode-pbq"
+                  onclick="window.location.href='pbq.html?exam=core2'">Performance-Based</button>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- end .aplus-sub-grid -->
+      </div><!-- end .aplus-card -->
+
+      <!-- BOTTOM ROW: Network+ and Security+ -->
+      <div class="exam-grid-bottom">
+
+        <!-- NETWORK+ CARD -->
+        <div class="exam-card">
+          <span class="card-badge badge-net">Network+</span>
+          <h2 class="card-title">Network+</h2>
+          <p class="card-exam-code">Exam N10-009</p>
+          <p class="card-description">
+            Deep-dives into networking — IP addressing, subnetting, routing protocols,
+            wireless, network security, and troubleshooting connectivity.
+          </p>
+          <button type="button" class="btn-start btn-net" onclick="togglePicker(this)">
+            Start Studying
+          </button>
+          <div class="mode-picker">
+            <p class="mode-label">Choose your study mode</p>
+            <div class="mode-buttons">
+              <button type="button" class="btn-mode btn-mode-mcq"
+                onclick="window.location.href='quiz.html?exam=netplus'">Multiple Choice</button>
+              <button type="button" class="btn-mode btn-mode-pbq"
+                onclick="window.location.href='pbq.html?exam=netplus'">Performance-Based</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECURITY+ CARD -->
+        <div class="exam-card">
+          <span class="card-badge badge-sec">Security+</span>
+          <h2 class="card-title">Security+</h2>
+          <p class="card-exam-code">Exam SY0-701</p>
+          <p class="card-description">
+            Cybersecurity fundamentals — threats, vulnerabilities, security
+            architecture, operations, and compliance.
+          </p>
+          <button type="button" class="btn-start btn-sec" onclick="togglePicker(this)">
+            Start Studying
+          </button>
+          <div class="mode-picker">
+            <p class="mode-label">Choose your study mode</p>
+            <div class="mode-buttons">
+              <button type="button" class="btn-mode btn-mode-mcq"
+                onclick="window.location.href='quiz.html?exam=secplus'">Multiple Choice</button>
+              <button type="button" class="btn-mode btn-mode-pbq"
+                onclick="window.location.href='pbq.html?exam=secplus'">Performance-Based</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end .exam-grid-bottom -->
+
+    </div><!-- end .exam-grid -->
+
+  </main>
+
+  <script>
+    /*
+     * togglePicker — called when "Start Studying" is clicked.
+     * Opens the mode picker below the button on the same card.
+     * If another card's picker is already open, it closes it first
+     * so only one is ever open at a time.
+     */
+    function togglePicker(btn) {
+      const picker = btn.nextElementSibling; /* The .mode-picker div right after the button */
+
+      /* Close any other open pickers */
+      document.querySelectorAll('.mode-picker.open').forEach(p => {
+        if (p !== picker) p.classList.remove('open');
+      });
+
+      /* Toggle this one */
+      picker.classList.toggle('open');
+    }
+  </script>
+
+  <footer class="site-footer">
+    &copy; <span id="year"></span> K. Hinds &mdash; Cert Prep by the Cyber Ninja. All rights reserved.
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  </footer>
+
+</body>
+</html>

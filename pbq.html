@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Performance-Based Questions — Cert Prep</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --color-primary:        #3b82f6;
+      --color-primary-hover:  #2563eb;
+      --color-bg:             #000000;
+      --color-surface:        #18181b;
+      --color-surface-hover:  #1f1f23;
+      --color-text-primary:   #fafafa;
+      --color-text-secondary: #a1a1aa;
+      --color-border:         #27272a;
+      --color-success:        #16a34a;
+      --color-success-bg:     rgba(22, 163, 74, 0.15);
+      --color-error:          #dc2626;
+      --color-error-bg:       rgba(220, 38, 38, 0.15);
+      --color-warning:        #d97706;
+      --color-warning-bg:     rgba(217, 119, 6, 0.12);
+      --font-base: 'DM Sans', sans-serif;
+      --radius-card:   12px;
+      --radius-button:  8px;
+      --radius-badge:   6px;
+    }
+
+    body {
+      font-family: var(--font-base);
+      background-color: var(--color-bg);
+      color: var(--color-text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ---- HEADER (identical to other pages) ---- */
+    .site-header {
+      background-color: rgba(0,0,0,0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--color-border);
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 72px;
+      display: flex;
+      align-items: center;
+    }
+    .header-inner {
+      max-width: 1000px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .logo-img   { height: 90px; width: auto; display: block; margin-top: -4px; }
+    .logo-divider {
+      width: 1px; height: 28px;
+      background-color: var(--color-border);
+      margin: 0 14px; flex-shrink: 0;
+    }
+    .logo-name {
+      font-size: 1.1rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: #fafafa; line-height: 1;
+    }
+
+    /* ---- MAIN CONTENT ---- */
+    .main-content {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 40px 16px 80px;
+    }
+    @media (min-width: 640px) { .main-content { padding: 52px 24px 80px; } }
+
+    /* ---- EXAM BANNER ---- */
+    .exam-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .exam-label { display: flex; flex-direction: column; gap: 4px; }
+    .exam-badge {
+      display: inline-block; font-size: 0.75rem; font-weight: 700;
+      padding: 3px 10px; border-radius: var(--radius-badge); align-self: flex-start;
+    }
+    .badge-core1 { background: rgba(59,130,246,0.15);  color: #3b82f6; }
+    .badge-core2 { background: rgba(139,92,246,0.15);  color: #8b5cf6; }
+    .badge-net   { background: rgba(16,185,129,0.15);  color: #10b981; }
+    .badge-sec   { background: rgba(245,158,11,0.15);  color: #f59e0b; }
+
+    .exam-title { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.01em; }
+
+    /* PBQ label badge — distinguishes this mode from multiple choice */
+    .pbq-mode-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--color-warning-bg);
+      border: 1px solid var(--color-warning);
+      color: var(--color-warning);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: var(--radius-badge);
+      white-space: nowrap;
+    }
+
+    /* Score pill */
+    .score-display {
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-badge);
+      padding: 8px 16px;
+      font-size: 0.88rem;
+      color: var(--color-text-secondary);
+      white-space: nowrap;
+    }
+    .score-display span { color: var(--color-text-primary); font-weight: 700; }
+
+    /* ---- SHARED CARD ---- */
+    .card {
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-card);
+      padding: 28px 24px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.4);
+    }
+    @media (min-width: 640px) { .card { padding: 36px 32px; } }
+
+    /* ---- TOPIC SELECTOR ---- */
+    .section-heading { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+    .section-sub {
+      font-size: 0.88rem; color: var(--color-text-secondary);
+      margin-bottom: 20px; line-height: 1.5;
+    }
+    .topic-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 24px; }
+    @media (min-width: 480px) { .topic-grid { grid-template-columns: 1fr 1fr; } }
+
+    .topic-btn {
+      background-color: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-button);
+      padding: 12px 16px;
+      color: var(--color-text-secondary);
+      font-family: var(--font-base);
+      font-size: 0.88rem;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s, background-color 0.15s;
+      min-height: 44px;
+    }
+    .topic-btn:hover { border-color: var(--color-primary); color: var(--color-text-primary); }
+    .topic-btn.selected {
+      border-color: var(--color-primary);
+      background-color: rgba(59,130,246,0.1);
+      color: var(--color-text-primary); font-weight: 700;
+    }
+
+    /* ---- PRIMARY BUTTON ---- */
+    .btn-primary {
+      display: block; width: 100%; padding: 14px 20px;
+      background-color: var(--color-primary); color: #fff;
+      font-family: var(--font-base); font-size: 1rem; font-weight: 700;
+      text-align: center; border: none; border-radius: var(--radius-button);
+      cursor: pointer; transition: background-color 0.2s, transform 0.1s; min-height: 44px;
+    }
+    .btn-primary:hover  { background-color: var(--color-primary-hover); }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:disabled {
+      background-color: var(--color-border);
+      color: var(--color-text-secondary); cursor: not-allowed;
+    }
+
+    /* ---- LOADING ---- */
+    .loading-card { text-align: center; padding: 60px 24px; }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--color-border); border-top-color: var(--color-primary);
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+      margin: 0 auto 20px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { color: var(--color-text-secondary); font-size: 0.95rem; }
+
+    /* ---- PBQ CARD ---- */
+    .pbq-type-label {
+      display: inline-block;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; padding: 3px 9px;
+      border-radius: var(--radius-badge); margin-bottom: 14px;
+    }
+    .type-matching  { background: rgba(59,130,246,0.15); color: #3b82f6; }
+    .type-ordering  { background: rgba(139,92,246,0.15); color: #8b5cf6; }
+
+    .question-meta {
+      font-size: 0.8rem; color: var(--color-text-secondary);
+      margin-bottom: 16px; display: flex; justify-content: space-between;
+    }
+
+    /*
+     * SCENARIO BOX
+     * A shaded block that presents the real-world situation the student
+     * must solve — mirrors how CompTIA presents PBQ scenarios.
+     */
+    .scenario-box {
+      background-color: rgba(59,130,246,0.06);
+      border-left: 3px solid var(--color-primary);
+      border-radius: 0 var(--radius-button) var(--radius-button) 0;
+      padding: 14px 18px;
+      margin-bottom: 22px;
+      font-size: 0.92rem;
+      line-height: 1.65;
+      color: var(--color-text-primary);
+    }
+    .scenario-label {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--color-primary); margin-bottom: 6px;
+    }
+
+    .instruction {
+      font-size: 0.95rem; font-weight: 700;
+      margin-bottom: 20px; line-height: 1.5;
+    }
+
+    /* =============================================
+       MATCHING QUESTION
+       Two columns: left (items to match) and right (answers).
+       Student clicks a left item then a right item to pair them.
+    ============================================= */
+    .match-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 500px) { .match-container { grid-template-columns: 1fr; } }
+
+    .match-column-label {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em;
+      text-transform: uppercase; color: var(--color-text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .match-item {
+      background-color: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-button);
+      padding: 11px 14px;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: border-color 0.15s, background-color 0.15s;
+      margin-bottom: 8px;
+      min-height: 44px;
+      display: flex; align-items: center;
+      user-select: none;
+    }
+    .match-item:hover:not(.used):not(.disabled) {
+      border-color: var(--color-primary);
+    }
+    /* When selected (waiting for a pair to be clicked) */
+    .match-item.selected {
+      border-color: var(--color-primary);
+      background-color: rgba(59,130,246,0.15);
+      color: var(--color-text-primary);
+    }
+    /* After a pair is successfully matched */
+    .match-item.matched {
+      border-color: var(--color-success);
+      background-color: var(--color-success-bg);
+      color: #bbf7d0;
+      cursor: default;
+    }
+    /* After submit — wrong pairing */
+    .match-item.wrong {
+      border-color: var(--color-error);
+      background-color: var(--color-error-bg);
+      color: #fecaca;
+    }
+    .match-item.disabled { cursor: default; opacity: 0.6; }
+
+    /* Paired items show a connector line between them */
+    .match-pairs-display {
+      margin-bottom: 16px;
+    }
+    .match-pair-row {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 8px; font-size: 0.88rem;
+    }
+    .match-pair-left  { flex: 1; text-align: right; color: var(--color-text-secondary); }
+    .match-pair-arrow { color: var(--color-border); flex-shrink: 0; }
+    .match-pair-right { flex: 1; color: var(--color-text-primary); font-weight: 700; }
+
+    /* =============================================
+       ORDERING QUESTION
+       A numbered list the student reorders using
+       Up / Down arrow buttons.
+    ============================================= */
+    .order-list { list-style: none; margin-bottom: 20px; }
+
+    .order-item {
+      display: flex; align-items: center; gap: 12px;
+      background-color: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-button);
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      transition: border-color 0.15s;
+    }
+    /* Correct position after submit */
+    .order-item.correct {
+      border-color: var(--color-success);
+      background-color: var(--color-success-bg);
+    }
+    /* Wrong position after submit */
+    .order-item.wrong {
+      border-color: var(--color-error);
+      background-color: var(--color-error-bg);
+    }
+
+    .order-num {
+      font-size: 0.8rem; font-weight: 700;
+      color: var(--color-text-secondary);
+      min-width: 20px; text-align: center;
+    }
+    .order-text { flex: 1; line-height: 1.4; }
+
+    /* Up / Down arrow buttons */
+    .order-controls { display: flex; flex-direction: column; gap: 3px; flex-shrink: 0; }
+    .order-btn {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      color: var(--color-text-secondary);
+      font-size: 0.7rem;
+      width: 26px; height: 22px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .order-btn:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
+    .order-btn:disabled { opacity: 0.3; cursor: default; }
+
+    /* ---- FEEDBACK ---- */
+    .feedback {
+      margin-top: 20px; padding: 16px 18px;
+      border-radius: var(--radius-button);
+      font-size: 0.92rem; line-height: 1.6; display: none;
+    }
+    .feedback.correct {
+      background-color: var(--color-success-bg); border: 1px solid var(--color-success);
+      color: #bbf7d0; display: block;
+    }
+    .feedback.wrong {
+      background-color: var(--color-error-bg); border: 1px solid var(--color-error);
+      color: #fecaca; display: block;
+    }
+    .feedback-label { font-weight: 700; margin-bottom: 6px; font-size: 0.95rem; }
+
+    /* Submit + Next buttons */
+    .btn-submit { margin-top: 20px; }
+    .btn-next   { margin-top: 12px; display: none; }
+    .btn-next.visible { display: block; }
+    .btn-next[data-retrying="true"] { background-color: var(--color-error); }
+    .btn-next[data-retrying="true"]:hover { background-color: #b91c1c; }
+
+    /* ---- FOOTER ---- */
+    .site-footer {
+      border-top: 1px solid var(--color-border);
+      padding: 24px 20px; text-align: center;
+      font-size: 0.82rem; color: var(--color-text-secondary);
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="index.html" class="logo" aria-label="Cert Prep — home">
+        <img src="logo.png" alt="" class="logo-img" aria-hidden="true" />
+        <span class="logo-divider" aria-hidden="true"></span>
+        <span class="logo-name">Cert Prep</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="main-content">
+
+    <!-- EXAM BANNER -->
+    <div class="exam-banner">
+      <div class="exam-label">
+        <span id="examBadge" class="exam-badge"></span>
+        <h1 id="examTitle" class="exam-title"></h1>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <span class="pbq-mode-badge">&#9654; Performance-Based</span>
+        <div class="score-display">
+          Score: <span id="scoreCorrect">0</span> / <span id="scoreTotal">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOPIC SELECTOR -->
+    <div id="topicSection" class="card">
+      <p class="section-heading">Choose a topic</p>
+      <p class="section-sub">
+        Performance-based questions put you in real scenarios — no multiple choice.
+        You'll match, order, and configure just like in the actual CompTIA exam.
+      </p>
+      <div id="topicGrid" class="topic-grid"></div>
+      <button id="startBtn" class="btn-primary" disabled onclick="startQuiz()">
+        Start Performance Questions
+      </button>
+    </div>
+
+    <!-- LOADING -->
+    <div id="loadingSection" class="card loading-card hidden">
+      <div class="spinner"></div>
+      <p class="loading-text">Building your scenario...</p>
+    </div>
+
+    <!-- PBQ CARD -->
+    <div id="pbqSection" class="card hidden">
+      <div class="question-meta">
+        <span id="questionCount">Question 1</span>
+        <span id="topicLabel"></span>
+      </div>
+
+      <!-- Type label (MATCHING or ORDERING) -->
+      <span id="pbqTypeLabel" class="pbq-type-label"></span>
+
+      <!-- Scenario box — the real-world situation -->
+      <div class="scenario-box">
+        <p class="scenario-label">Scenario</p>
+        <p id="scenarioText"></p>
+      </div>
+
+      <!-- Instruction -->
+      <p id="instructionText" class="instruction"></p>
+
+      <!-- MATCHING UI (shown for matching questions) -->
+      <div id="matchingSection" class="hidden">
+        <div class="match-container">
+          <div>
+            <p class="match-column-label">Items</p>
+            <div id="matchLeft"></div>
+          </div>
+          <div>
+            <p class="match-column-label">Answers</p>
+            <div id="matchRight"></div>
+          </div>
+        </div>
+        <!-- Shows completed pairs as the student matches them -->
+        <div id="matchPairsDisplay" class="match-pairs-display hidden"></div>
+      </div>
+
+      <!-- ORDERING UI (shown for ordering questions) -->
+      <div id="orderingSection" class="hidden">
+        <ol id="orderList" class="order-list"></ol>
+      </div>
+
+      <!-- Submit button -->
+      <button id="submitBtn" class="btn-primary btn-submit" onclick="submitAnswer()">
+        Submit Answer
+      </button>
+
+      <!-- Feedback -->
+      <div id="feedback" class="feedback">
+        <p class="feedback-label" id="feedbackLabel"></p>
+        <p id="feedbackText"></p>
+      </div>
+
+      <!-- Next / Try Again button -->
+      <button id="nextBtn" class="btn-primary btn-next" onclick="nextQuestion()">
+        Next Question
+      </button>
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    &copy; <span id="year"></span> K. Hinds &mdash; Cert Prep by the Cyber Ninja. All rights reserved.
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  </footer>
+
+  <script>
+    /* =============================================
+       EXAM CONFIG — same topics as quiz.html
+    ============================================= */
+    const EXAMS = {
+      core1: {
+        badge: 'Core 1', badgeClass: 'badge-core1',
+        title: 'A+ Core 1 — 220-1201',
+        topics: [
+          'Mobile Devices', 'Networking Fundamentals', 'Hardware',
+          'Virtualization & Cloud Computing', 'Hardware & Network Troubleshooting',
+        ],
+      },
+      core2: {
+        badge: 'Core 2', badgeClass: 'badge-core2',
+        title: 'A+ Core 2 — 220-1202',
+        topics: [
+          'Operating Systems', 'Security', 'Software Troubleshooting', 'Operational Procedures',
+        ],
+      },
+      netplus: {
+        badge: 'Network+', badgeClass: 'badge-net',
+        title: 'Network+ — N10-009',
+        topics: [
+          'Networking Concepts', 'Network Implementation',
+          'Network Operations', 'Network Security', 'Network Troubleshooting',
+        ],
+      },
+      secplus: {
+        badge: 'Security+', badgeClass: 'badge-sec',
+        title: 'Security+ — SY0-701',
+        topics: [
+          'General Security Concepts',
+          'Threats, Vulnerabilities & Mitigations',
+          'Security Architecture',
+          'Security Operations',
+          'Security Program Management & Oversight',
+        ],
+      },
+    };
+
+    const WORKER_URL = 'https://comptidda.kemar-k-hinds.workers.dev';
+
+    /* ---- STATE ---- */
+    let currentExam   = null;
+    let selectedTopic = null;
+    let questionNum   = 0;
+    let scoreCorrect  = 0;
+    let scoreTotal    = 0;
+    let currentQ      = null;  /* The parsed question object currently displayed */
+    let selectedLeft  = null;  /* For matching: the left item the student clicked first */
+    let pairs         = {};    /* For matching: completed pairs { leftItem: rightItem } */
+
+    /* =============================================
+       INIT
+    ============================================= */
+    function init() {
+      const params  = new URLSearchParams(window.location.search);
+      const examKey = params.get('exam');
+      if (!examKey || !EXAMS[examKey]) { window.location.href = 'index.html'; return; }
+
+      currentExam = EXAMS[examKey];
+      const badge = document.getElementById('examBadge');
+      badge.textContent = currentExam.badge;
+      badge.className   = 'exam-badge ' + currentExam.badgeClass;
+      document.getElementById('examTitle').textContent = currentExam.title;
+      buildTopicGrid();
+    }
+
+    function buildTopicGrid() {
+      const grid = document.getElementById('topicGrid');
+      grid.innerHTML = '';
+      currentExam.topics.forEach(topic => {
+        const btn = document.createElement('button');
+        btn.type = 'button'; btn.className = 'topic-btn'; btn.textContent = topic;
+        btn.onclick = () => selectTopic(topic, btn);
+        grid.appendChild(btn);
+      });
+    }
+
+    function selectTopic(topic, btn) {
+      selectedTopic = topic;
+      document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      document.getElementById('startBtn').disabled = false;
+    }
+
+    function startQuiz() {
+      if (!selectedTopic) return;
+      document.getElementById('topicSection').classList.add('hidden');
+      questionNum = 0;
+      fetchQuestion();
+    }
+
+    /* =============================================
+       FETCH QUESTION
+       Asks Claude to generate a PBQ-style scenario.
+       The prompt explicitly requests either a MATCHING
+       or ORDERING question in a strict JSON format.
+    ============================================= */
+    async function fetchQuestion() {
+      questionNum++;
+      show('loadingSection');
+      hide('pbqSection');
+
+      /*
+       * Alternate between question types so students get variety.
+       * Odd questions = matching, even questions = ordering.
+       */
+      const qType = (questionNum % 2 === 1) ? 'matching' : 'ordering';
+
+      const prompt = buildPrompt(qType);
+
+      try {
+        const response = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt }),
+        });
+
+        const data   = await response.json();
+        const raw    = data.content[0].text;
+        const clean  = raw.replace(/```json|```/g, '').trim();
+        const q      = JSON.parse(clean);
+
+        currentQ = q;
+        displayQuestion(q);
+
+      } catch (err) {
+        hide('loadingSection');
+        show('pbqSection');
+        document.getElementById('scenarioText').textContent =
+          'Something went wrong. Please try again.';
+        console.error('PBQ fetch error:', err);
+      }
+    }
+
+    /*
+     * Builds the AI prompt depending on the question type.
+     * We give Claude a very strict JSON schema so the output
+     * is always parseable without guesswork.
+     */
+    function buildPrompt(qType) {
+      if (qType === 'matching') {
+        return `You are a CompTIA exam question writer creating a Performance-Based Question (PBQ).
+
+Generate a MATCHING performance-based question for the ${currentExam.title} exam about "${selectedTopic}".
+
+The student must match 4 items on the left to 4 correct answers on the right. Make the scenario realistic and technical — similar to what appears on the actual CompTIA exam.
+
+Return ONLY valid JSON in exactly this format (no markdown, no explanation):
+{
+  "type": "matching",
+  "scenario": "A real-world technical scenario of 2-3 sentences that sets the context.",
+  "instruction": "Match each item on the left to its correct description or pair on the right.",
+  "left":  ["Item 1", "Item 2", "Item 3", "Item 4"],
+  "right": ["Answer for Item 1", "Answer for Item 2", "Answer for Item 3", "Answer for Item 4"],
+  "correct": {
+    "Item 1": "Answer for Item 1",
+    "Item 2": "Answer for Item 2",
+    "Item 3": "Answer for Item 3",
+    "Item 4": "Answer for Item 4"
+  },
+  "explanation": "A clear explanation of all correct pairings and why, written for a beginner student."
+}
+
+IMPORTANT: Shuffle the right array so the answers are NOT in the same order as the left array. The correct object must still map each left item to its correct right answer.`;
+      }
+
+      /* Ordering prompt */
+      return `You are a CompTIA exam question writer creating a Performance-Based Question (PBQ).
+
+Generate an ORDERING performance-based question for the ${currentExam.title} exam about "${selectedTopic}".
+
+The student must drag or sort 5 steps into the correct sequence. Make it a realistic troubleshooting or configuration task that would appear on the actual CompTIA exam.
+
+Return ONLY valid JSON in exactly this format (no markdown, no explanation):
+{
+  "type": "ordering",
+  "scenario": "A real-world technical scenario of 2-3 sentences that sets the context.",
+  "instruction": "Place the following steps in the correct order to complete the task.",
+  "steps": [
+    "Step that belongs at position 1",
+    "Step that belongs at position 2",
+    "Step that belongs at position 3",
+    "Step that belongs at position 4",
+    "Step that belongs at position 5"
+  ],
+  "shuffled": [
+    "Step that belongs at position 3",
+    "Step that belongs at position 1",
+    "Step that belongs at position 5",
+    "Step that belongs at position 2",
+    "Step that belongs at position 4"
+  ],
+  "explanation": "A clear explanation of why the steps must be performed in this order, written for a beginner student."
+}
+
+IMPORTANT: "steps" must be in the correct order. "shuffled" must be the same steps in a DIFFERENT, randomised order — this is what the student sees and has to reorder.`;
+    }
+
+    /* =============================================
+       DISPLAY QUESTION
+    ============================================= */
+    function displayQuestion(q) {
+      hide('loadingSection');
+      show('pbqSection');
+
+      /* Reset state */
+      selectedLeft = null;
+      pairs        = {};
+
+      document.getElementById('questionCount').textContent = 'Question ' + questionNum;
+      document.getElementById('topicLabel').textContent    = selectedTopic;
+      document.getElementById('scenarioText').textContent  = q.scenario;
+      document.getElementById('instructionText').textContent = q.instruction;
+
+      /* Reset feedback and buttons */
+      const feedback = document.getElementById('feedback');
+      feedback.className = 'feedback';
+      document.getElementById('nextBtn').classList.remove('visible');
+
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled    = false;
+      submitBtn.textContent = 'Submit Answer';
+      submitBtn.classList.remove('hidden');
+
+      if (q.type === 'matching') {
+        buildMatchingUI(q);
+      } else {
+        buildOrderingUI(q);
+      }
+    }
+
+    /* =============================================
+       MATCHING UI
+    ============================================= */
+    function buildMatchingUI(q) {
+      /* Show type label */
+      const typeLabel = document.getElementById('pbqTypeLabel');
+      typeLabel.textContent = 'Matching';
+      typeLabel.className   = 'pbq-type-label type-matching';
+
+      show('matchingSection');
+      hide('orderingSection');
+      hide('matchPairsDisplay');
+      document.getElementById('matchPairsDisplay').innerHTML = '';
+
+      /* Build left column */
+      const leftCol = document.getElementById('matchLeft');
+      leftCol.innerHTML = '';
+      q.left.forEach(item => {
+        const el = document.createElement('div');
+        el.className   = 'match-item';
+        el.textContent = item;
+        el.dataset.val = item;
+        el.onclick     = () => handleLeftClick(el, q);
+        leftCol.appendChild(el);
+      });
+
+      /* Build right column — shown in shuffled order */
+      const rightCol = document.getElementById('matchRight');
+      rightCol.innerHTML = '';
+      /* Shuffle a copy of the right array for display */
+      const shuffledRight = [...q.right].sort(() => Math.random() - 0.5);
+      shuffledRight.forEach(item => {
+        const el = document.createElement('div');
+        el.className   = 'match-item';
+        el.textContent = item;
+        el.dataset.val = item;
+        el.onclick     = () => handleRightClick(el, q);
+        rightCol.appendChild(el);
+      });
+    }
+
+    /*
+     * MATCHING INTERACTION
+     * Click a left item → it gets highlighted (selected).
+     * Then click a right item → they are paired and both greyed out.
+     * All pairs must be made before submitting.
+     */
+    function handleLeftClick(el, q) {
+      if (el.classList.contains('matched') || el.classList.contains('disabled')) return;
+
+      /* Deselect any previously selected left item */
+      document.querySelectorAll('#matchLeft .match-item').forEach(i => i.classList.remove('selected'));
+
+      el.classList.add('selected');
+      selectedLeft = el;
+    }
+
+    function handleRightClick(el, q) {
+      if (!selectedLeft) return;
+      if (el.classList.contains('matched') || el.classList.contains('disabled')) return;
+
+      /* Record the pair */
+      const leftVal  = selectedLeft.dataset.val;
+      const rightVal = el.dataset.val;
+      pairs[leftVal] = rightVal;
+
+      /* Mark both items as matched */
+      selectedLeft.classList.remove('selected');
+      selectedLeft.classList.add('matched', 'disabled');
+      el.classList.add('matched', 'disabled');
+      selectedLeft = null;
+
+      /* Show the pair in the pairs display area */
+      showPair(leftVal, rightVal);
+
+      /* Auto-enable submit once all pairs are made */
+      if (Object.keys(pairs).length === q.left.length) {
+        document.getElementById('submitBtn').disabled = false;
+      }
+    }
+
+    function showPair(left, right) {
+      const display = document.getElementById('matchPairsDisplay');
+      display.classList.remove('hidden');
+
+      const row = document.createElement('div');
+      row.className = 'match-pair-row';
+      row.innerHTML = `
+        <span class="match-pair-left">${left}</span>
+        <span class="match-pair-arrow">→</span>
+        <span class="match-pair-right">${right}</span>
+      `;
+      display.appendChild(row);
+    }
+
+    /* =============================================
+       ORDERING UI
+    ============================================= */
+    function buildOrderingUI(q) {
+      const typeLabel = document.getElementById('pbqTypeLabel');
+      typeLabel.textContent = 'Ordering';
+      typeLabel.className   = 'pbq-type-label type-ordering';
+
+      hide('matchingSection');
+      show('orderingSection');
+
+      const list = document.getElementById('orderList');
+      list.innerHTML = '';
+
+      /* Build list from the shuffled order (what the student sees) */
+      q.shuffled.forEach((step, index) => {
+        const li = document.createElement('li');
+        li.className       = 'order-item';
+        li.dataset.text    = step;
+
+        li.innerHTML = `
+          <span class="order-num">${index + 1}</span>
+          <span class="order-text">${step}</span>
+          <div class="order-controls">
+            <button class="order-btn" onclick="moveStep(this, -1)" title="Move up">&#9650;</button>
+            <button class="order-btn" onclick="moveStep(this, 1)"  title="Move down">&#9660;</button>
+          </div>
+        `;
+        list.appendChild(li);
+      });
+
+      updateOrderNumbers();
+    }
+
+    /* Move an ordering item up (-1) or down (+1) */
+    function moveStep(btn, direction) {
+      const li   = btn.closest('.order-item');
+      const list = document.getElementById('orderList');
+      const items = [...list.querySelectorAll('.order-item')];
+      const idx   = items.indexOf(li);
+
+      const swapIdx = idx + direction;
+      if (swapIdx < 0 || swapIdx >= items.length) return;
+
+      /* Swap DOM positions */
+      if (direction === -1) {
+        list.insertBefore(li, items[swapIdx]);
+      } else {
+        list.insertBefore(items[swapIdx], li);
+      }
+
+      updateOrderNumbers();
+    }
+
+    /* Re-number the items after each move */
+    function updateOrderNumbers() {
+      document.querySelectorAll('#orderList .order-item').forEach((li, i) => {
+        li.querySelector('.order-num').textContent = i + 1;
+        /* Disable the top item's up button and bottom item's down button */
+        const btns = li.querySelectorAll('.order-btn');
+        btns[0].disabled = (i === 0);
+        btns[1].disabled = (i === document.querySelectorAll('#orderList .order-item').length - 1);
+      });
+    }
+
+    /* =============================================
+       SUBMIT ANSWER
+    ============================================= */
+    function submitAnswer() {
+      if (currentQ.type === 'matching') {
+        submitMatching();
+      } else {
+        submitOrdering();
+      }
+    }
+
+    function submitMatching() {
+      const q = currentQ;
+      let allCorrect = true;
+
+      /* Check every pair the student made against the correct answers */
+      document.querySelectorAll('#matchLeft .match-item').forEach(el => {
+        const leftVal   = el.dataset.val;
+        const rightVal  = pairs[leftVal];
+        const correct   = q.correct[leftVal];
+        const isCorrect = rightVal === correct;
+
+        /* Find the matching right item and colour it */
+        const rightEl = [...document.querySelectorAll('#matchRight .match-item')]
+          .find(r => r.dataset.val === rightVal);
+
+        if (isCorrect) {
+          el.classList.add('matched');
+          if (rightEl) rightEl.classList.add('matched');
+        } else {
+          el.classList.remove('matched');
+          el.classList.add('wrong');
+          if (rightEl) { rightEl.classList.remove('matched'); rightEl.classList.add('wrong'); }
+          allCorrect = false;
+        }
+      });
+
+      showFeedback(allCorrect, q.explanation);
+    }
+
+    function submitOrdering() {
+      const q = currentQ;
+      const studentOrder = [...document.querySelectorAll('#orderList .order-item')]
+        .map(li => li.dataset.text);
+
+      /* Compare student's order against the correct steps array */
+      let allCorrect = true;
+      studentOrder.forEach((step, i) => {
+        const li        = document.querySelectorAll('#orderList .order-item')[i];
+        const isCorrect = step === q.steps[i];
+        li.classList.add(isCorrect ? 'correct' : 'wrong');
+        if (!isCorrect) allCorrect = false;
+      });
+
+      /* Disable move buttons after submit */
+      document.querySelectorAll('.order-btn').forEach(b => b.disabled = true);
+
+      showFeedback(allCorrect, q.explanation);
+    }
+
+    function showFeedback(isCorrect, explanation) {
+      scoreTotal++;
+      if (isCorrect) scoreCorrect++;
+      document.getElementById('scoreCorrect').textContent = scoreCorrect;
+      document.getElementById('scoreTotal').textContent   = scoreTotal;
+
+      /* Hide submit button */
+      document.getElementById('submitBtn').classList.add('hidden');
+
+      const feedback = document.getElementById('feedback');
+      feedback.className = 'feedback ' + (isCorrect ? 'correct' : 'wrong');
+      document.getElementById('feedbackLabel').textContent = isCorrect ? 'Correct!' : 'Incorrect';
+      document.getElementById('feedbackText').textContent  = explanation;
+
+      const nextBtn = document.getElementById('nextBtn');
+      nextBtn.textContent        = isCorrect ? 'Next Question' : 'Try Again on this Topic';
+      nextBtn.dataset.retrying   = isCorrect ? 'false' : 'true';
+      nextBtn.classList.add('visible');
+    }
+
+    function nextQuestion() { fetchQuestion(); }
+
+    /* ---- Utilities ---- */
+    function show(id) { document.getElementById(id).classList.remove('hidden'); }
+    function hide(id) { document.getElementById(id).classList.add('hidden'); }
+
+    init();
+  </script>
+
+</body>
+</html>
