@@ -412,6 +412,19 @@
     }
     .feedback-label { font-weight: 700; margin-bottom: 6px; font-size: 0.95rem; }
 
+    /* Undo button — secondary ghost style, sits below the pairs display */
+    .btn-undo {
+      display: block; width: 100%; padding: 10px 16px;
+      background-color: transparent;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-button);
+      color: var(--color-text-secondary);
+      font-family: var(--font-base); font-size: 0.88rem;
+      cursor: pointer; margin-top: 10px;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn-undo:hover { border-color: var(--color-error); color: #fca5a5; }
+
     /* Submit + Next buttons */
     .btn-submit { margin-top: 20px; }
     .btn-next   { margin-top: 12px; display: none; }
@@ -510,6 +523,10 @@
         </div>
         <!-- Shows completed pairs as the student matches them -->
         <div id="matchPairsDisplay" class="match-pairs-display hidden"></div>
+        <!-- Undo the most recent pair -->
+        <button id="undoBtn" class="btn-undo hidden" onclick="undoLastPair()">
+          &#8592; Undo Last Match
+        </button>
       </div>
 
       <!-- ORDERING UI (shown for ordering questions) -->
@@ -595,6 +612,7 @@
     let pairs         = {};    /* For matching: completed pairs { leftItem: rightItem } */
     let pairColors    = {};    /* For matching: which color index each left item got */
     let pairCount     = 0;     /* Increments with each completed pair to pick the next color */
+    let pairStack     = [];    /* Ordered history of pairs for undo { leftVal, rightVal, colorIdx } */
 
     /* =============================================
        INIT
@@ -756,6 +774,7 @@ IMPORTANT: "steps" must be in the correct order. "shuffled" must be the same ste
       pairs        = {};
       pairColors   = {};
       pairCount    = 0;
+      pairStack    = [];
 
       document.getElementById('questionCount').textContent = 'Question ' + questionNum;
       document.getElementById('topicLabel').textContent    = selectedTopic;
@@ -856,6 +875,10 @@ IMPORTANT: "steps" must be in the correct order. "shuffled" must be the same ste
       el.classList.add('matched', 'disabled', `pair-${colorIdx}`);
       selectedLeft = null;
 
+      /* Track pair in undo stack */
+      pairStack.push({ leftVal, rightVal, colorIdx });
+      document.getElementById('undoBtn').classList.remove('hidden');
+
       /* Show the pair in the pairs display area */
       showPair(leftVal, rightVal, colorIdx);
 
@@ -879,6 +902,50 @@ IMPORTANT: "steps" must be in the correct order. "shuffled" must be the same ste
         <span class="match-pair-right">${right}</span>
       `;
       display.appendChild(row);
+    }
+
+    /*
+     * UNDO — removes the most recently made pair and returns
+     * both items to their clickable, unmatched state.
+     */
+    function undoLastPair() {
+      if (pairStack.length === 0) return;
+
+      const { leftVal, rightVal, colorIdx } = pairStack.pop();
+
+      /* Remove from pairs map */
+      delete pairs[leftVal];
+      delete pairColors[leftVal];
+      pairCount = Math.max(0, pairCount - 1);
+
+      /* Restore the left item */
+      const leftEl = [...document.querySelectorAll('#matchLeft .match-item')]
+        .find(el => el.dataset.val === leftVal);
+      if (leftEl) {
+        leftEl.classList.remove('matched', 'disabled', `pair-${colorIdx}`);
+      }
+
+      /* Restore the right item */
+      const rightEl = [...document.querySelectorAll('#matchRight .match-item')]
+        .find(el => el.dataset.val === rightVal);
+      if (rightEl) {
+        rightEl.classList.remove('matched', 'disabled', `pair-${colorIdx}`);
+      }
+
+      /* Remove the pair row from the display */
+      const display = document.getElementById('matchPairsDisplay');
+      const row = [...display.querySelectorAll('.match-pair-row')]
+        .find(r => r.dataset.leftVal === leftVal);
+      if (row) row.remove();
+      if (display.children.length === 0) display.classList.add('hidden');
+
+      /* Disable submit if not all pairs are complete */
+      document.getElementById('submitBtn').disabled = true;
+
+      /* Hide undo button when no pairs remain */
+      if (pairStack.length === 0) {
+        document.getElementById('undoBtn').classList.add('hidden');
+      }
     }
 
     /* =============================================
@@ -1018,8 +1085,9 @@ IMPORTANT: "steps" must be in the correct order. "shuffled" must be the same ste
       document.getElementById('scoreCorrect').textContent = scoreCorrect;
       document.getElementById('scoreTotal').textContent   = scoreTotal;
 
-      /* Hide submit button */
+      /* Hide submit and undo buttons */
       document.getElementById('submitBtn').classList.add('hidden');
+      document.getElementById('undoBtn').classList.add('hidden');
 
       const feedback = document.getElementById('feedback');
       feedback.className = 'feedback ' + (isCorrect ? 'correct' : 'wrong');
