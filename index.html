@@ -221,87 +221,61 @@
 
     /* =============================================
        PAGE LAYOUT
-       A+ card sits full-width on top.
-       Network+ and Security+ sit side by side below.
+       Three equal cards side by side on desktop.
+       Stacks to a single column on mobile.
     ============================================= */
     .exam-grid {
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: 1fr; /* Mobile: single column */
       gap: 20px;
     }
 
-    /* Bottom row: Network+ and Security+ side by side */
-    .exam-grid-bottom {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 20px;
-    }
-    @media (min-width: 600px) {
-      .exam-grid-bottom { grid-template-columns: 1fr 1fr; }
+    /* On screens 700px and wider, switch to 3 equal columns */
+    @media (min-width: 700px) {
+      .exam-grid { grid-template-columns: repeat(3, 1fr); }
     }
 
-    /* =============================================
-       A+ COMBINED CARD
-       One card that contains both Core 1 and Core 2
-       as sub-sections inside it.
-    ============================================= */
-    .aplus-card {
-      background-color: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-card);
-      padding: 28px 24px;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.4);
-    }
-    @media (min-width: 700px) { .aplus-card { padding: 32px 28px; } }
-
-    /* Header section of the A+ card — badge + title + description */
-    .aplus-header {
-      margin-bottom: 24px;
-    }
-    .aplus-header .card-badge { margin-bottom: 12px; }
-    .aplus-title {
-      font-size: 1.4rem; font-weight: 700; letter-spacing: -0.01em;
-      margin-bottom: 8px;
-    }
-    .aplus-desc {
-      font-size: 0.88rem; color: var(--color-text-secondary); line-height: 1.6;
+    /*
+     * A+ MODE PICKER — extended variant of .mode-picker.
+     * Needs more max-height because it contains two exam rows
+     * (Core 1 and Core 2) instead of just two buttons.
+     */
+    .aplus-picker.open {
+      max-height: 360px; /* Override the default 200px */
     }
 
-    /* Divider between the header and the two sub-sections */
-    .aplus-divider {
-      border: none; border-top: 1px solid var(--color-border); margin-bottom: 22px;
+    /* One row per sub-exam (Core 1 / Core 2) inside the A+ picker */
+    .aplus-exam-row {
+      margin-bottom: 12px;
     }
+    .aplus-exam-row:last-child { margin-bottom: 0; }
 
-    /* Sub-grid: Core 1 and Core 2 side by side */
-    .aplus-sub-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 16px;
-    }
-    @media (min-width: 560px) {
-      .aplus-sub-grid { grid-template-columns: 1fr 1fr; }
-    }
-
-    /* Each sub-section inside the A+ card */
-    .aplus-sub {
-      background-color: var(--color-bg);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-button);
-      padding: 18px;
+    /* Label above each sub-exam row — e.g. "● Core 1 — 220-1201" */
+    .aplus-exam-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--color-text-secondary);
+      margin-bottom: 6px;
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      gap: 6px;
     }
 
-    .aplus-sub-title {
-      font-size: 1rem; font-weight: 700; margin-bottom: 4px;
+    /* Coloured dot beside the sub-exam label */
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
     }
-    .aplus-sub-code {
-      font-size: 0.75rem; color: var(--color-text-secondary);
-      margin-bottom: 10px; opacity: 0.8;
-    }
-    .aplus-sub-desc {
-      font-size: 0.85rem; color: var(--color-text-secondary);
-      line-height: 1.55; flex-grow: 1; margin-bottom: 14px;
+    .badge-dot-core1 { background-color: var(--accent-core1); }
+    .badge-dot-core2 { background-color: var(--accent-core2); }
+
+    /* Thin rule between Core 1 and Core 2 rows */
+    .aplus-row-divider {
+      border: none;
+      border-top: 1px solid var(--color-border);
+      margin: 10px 0;
     }
 
     /* =============================================
@@ -582,118 +556,108 @@
 
     <div class="exam-grid">
 
-      <!-- A+ COMBINED CARD — one card, two sub-sections inside -->
-      <div class="aplus-card">
-        <div class="aplus-header">
-          <span class="card-badge badge-core1">CompTIA A+</span>
-          <h2 class="aplus-title">A+ Certification</h2>
-          <p class="aplus-desc">
-            Two separate exams — pass both to earn your A+.
-            Choose the exam you want to practise below.
-          </p>
-        </div>
-        <hr class="aplus-divider" />
-        <div class="aplus-sub-grid">
+      <!--
+        A+ CARD
+        Clicking "Start Studying" reveals both exam options — Core 1 and Core 2.
+        Each row has its own Multiple Choice and Performance-Based buttons.
+        The .aplus-picker class extends .mode-picker with a taller max-height.
+      -->
+      <div class="exam-card">
+        <span class="card-badge badge-core1">CompTIA A+</span>
+        <h2 class="card-title">A+ Certification</h2>
+        <p class="card-exam-code">Exams 220-1201 &amp; 220-1202</p>
+        <p class="card-description">
+          Two exams — pass both to earn your A+.
+          Hardware, networking, OS, security, and troubleshooting.
+        </p>
+        <button type="button" class="btn-start" onclick="togglePicker(this)">
+          Start Studying
+        </button>
+        <!--
+          A+ picker — two rows, one per sub-exam.
+          .aplus-picker overrides .mode-picker's max-height to fit both rows.
+        -->
+        <div class="mode-picker aplus-picker">
+          <p class="mode-label">Choose your exam</p>
 
-          <!-- CORE 1 SUB-SECTION -->
-          <div class="aplus-sub">
-            <span class="card-badge badge-core1" style="margin-bottom:10px;">Core 1</span>
-            <h3 class="aplus-sub-title">220-1201</h3>
-            <p class="aplus-sub-code">Hardware &bull; Networking &bull; Mobile Devices &bull; Virtualisation</p>
-            <p class="aplus-sub-desc">
-              The physical side of IT — hardware, networking fundamentals,
-              mobile devices, and cloud basics.
-            </p>
-            <button type="button" class="btn-start" onclick="togglePicker(this)">
-              Start Studying
-            </button>
-            <div class="mode-picker">
-              <p class="mode-label">Choose your study mode</p>
-              <div class="mode-buttons">
-                <button type="button" class="btn-mode btn-mode-mcq"
-                  onclick="window.location.href='quiz.html?exam=core1'">Multiple Choice</button>
-                <button type="button" class="btn-mode btn-mode-pbq"
-                  onclick="window.location.href='pbq.html?exam=core1'">Performance-Based</button>
-              </div>
+          <!-- Core 1 row -->
+          <div class="aplus-exam-row">
+            <div class="aplus-exam-label">
+              <span class="badge-dot badge-dot-core1"></span>
+              Core 1 &mdash; 220-1201
             </div>
-          </div>
-
-          <!-- CORE 2 SUB-SECTION -->
-          <div class="aplus-sub">
-            <span class="card-badge badge-core2" style="margin-bottom:10px;">Core 2</span>
-            <h3 class="aplus-sub-title">220-1202</h3>
-            <p class="aplus-sub-code">OS &bull; Security &bull; Troubleshooting &bull; Procedures</p>
-            <p class="aplus-sub-desc">
-              The software side — Windows, macOS, Linux, security threats,
-              and software troubleshooting.
-            </p>
-            <button type="button" class="btn-start btn-core2" onclick="togglePicker(this)">
-              Start Studying
-            </button>
-            <div class="mode-picker">
-              <p class="mode-label">Choose your study mode</p>
-              <div class="mode-buttons">
-                <button type="button" class="btn-mode btn-mode-mcq"
-                  onclick="window.location.href='quiz.html?exam=core2'">Multiple Choice</button>
-                <button type="button" class="btn-mode btn-mode-pbq"
-                  onclick="window.location.href='pbq.html?exam=core2'">Performance-Based</button>
-              </div>
-            </div>
-          </div>
-
-        </div><!-- end .aplus-sub-grid -->
-      </div><!-- end .aplus-card -->
-
-      <!-- BOTTOM ROW: Network+ and Security+ -->
-      <div class="exam-grid-bottom">
-
-        <!-- NETWORK+ CARD -->
-        <div class="exam-card">
-          <span class="card-badge badge-net">Network+</span>
-          <h2 class="card-title">Network+</h2>
-          <p class="card-exam-code">Exam N10-009</p>
-          <p class="card-description">
-            Deep-dives into networking — IP addressing, subnetting, routing protocols,
-            wireless, network security, and troubleshooting connectivity.
-          </p>
-          <button type="button" class="btn-start btn-net" onclick="togglePicker(this)">
-            Start Studying
-          </button>
-          <div class="mode-picker">
-            <p class="mode-label">Choose your study mode</p>
             <div class="mode-buttons">
               <button type="button" class="btn-mode btn-mode-mcq"
-                onclick="window.location.href='quiz.html?exam=netplus'">Multiple Choice</button>
+                onclick="window.location.href='quiz.html?exam=core1'">Multiple Choice</button>
               <button type="button" class="btn-mode btn-mode-pbq"
-                onclick="window.location.href='pbq.html?exam=netplus'">Performance-Based</button>
+                onclick="window.location.href='pbq.html?exam=core1'">Performance-Based</button>
             </div>
           </div>
-        </div>
 
-        <!-- SECURITY+ CARD -->
-        <div class="exam-card">
-          <span class="card-badge badge-sec">Security+</span>
-          <h2 class="card-title">Security+</h2>
-          <p class="card-exam-code">Exam SY0-701</p>
-          <p class="card-description">
-            Cybersecurity fundamentals — threats, vulnerabilities, security
-            architecture, operations, and compliance.
-          </p>
-          <button type="button" class="btn-start btn-sec" onclick="togglePicker(this)">
-            Start Studying
-          </button>
-          <div class="mode-picker">
-            <p class="mode-label">Choose your study mode</p>
+          <hr class="aplus-row-divider" />
+
+          <!-- Core 2 row -->
+          <div class="aplus-exam-row">
+            <div class="aplus-exam-label">
+              <span class="badge-dot badge-dot-core2"></span>
+              Core 2 &mdash; 220-1202
+            </div>
             <div class="mode-buttons">
               <button type="button" class="btn-mode btn-mode-mcq"
-                onclick="window.location.href='quiz.html?exam=secplus'">Multiple Choice</button>
+                onclick="window.location.href='quiz.html?exam=core2'">Multiple Choice</button>
               <button type="button" class="btn-mode btn-mode-pbq"
-                onclick="window.location.href='pbq.html?exam=secplus'">Performance-Based</button>
+                onclick="window.location.href='pbq.html?exam=core2'">Performance-Based</button>
             </div>
           </div>
-        </div>
 
-      </div><!-- end .exam-grid-bottom -->
+        </div><!-- end .aplus-picker -->
+      </div><!-- end A+ card -->
+
+      <!-- NETWORK+ CARD -->
+      <div class="exam-card">
+        <span class="card-badge badge-net">Network+</span>
+        <h2 class="card-title">Network+</h2>
+        <p class="card-exam-code">Exam N10-009</p>
+        <p class="card-description">
+          Deep-dives into networking — IP addressing, subnetting, routing protocols,
+          wireless, network security, and troubleshooting connectivity.
+        </p>
+        <button type="button" class="btn-start btn-net" onclick="togglePicker(this)">
+          Start Studying
+        </button>
+        <div class="mode-picker">
+          <p class="mode-label">Choose your study mode</p>
+          <div class="mode-buttons">
+            <button type="button" class="btn-mode btn-mode-mcq"
+              onclick="window.location.href='quiz.html?exam=netplus'">Multiple Choice</button>
+            <button type="button" class="btn-mode btn-mode-pbq"
+              onclick="window.location.href='pbq.html?exam=netplus'">Performance-Based</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECURITY+ CARD -->
+      <div class="exam-card">
+        <span class="card-badge badge-sec">Security+</span>
+        <h2 class="card-title">Security+</h2>
+        <p class="card-exam-code">Exam SY0-701</p>
+        <p class="card-description">
+          Cybersecurity fundamentals — threats, vulnerabilities, security
+          architecture, operations, and compliance.
+        </p>
+        <button type="button" class="btn-start btn-sec" onclick="togglePicker(this)">
+          Start Studying
+        </button>
+        <div class="mode-picker">
+          <p class="mode-label">Choose your study mode</p>
+          <div class="mode-buttons">
+            <button type="button" class="btn-mode btn-mode-mcq"
+              onclick="window.location.href='quiz.html?exam=secplus'">Multiple Choice</button>
+            <button type="button" class="btn-mode btn-mode-pbq"
+              onclick="window.location.href='pbq.html?exam=secplus'">Performance-Based</button>
+          </div>
+        </div>
+      </div>
 
     </div><!-- end .exam-grid -->
 
