@@ -160,7 +160,7 @@
       width: 1px;
       height: 28px;
       background-color: var(--color-border);
-      margin: 0 14px;
+      margin: 8px 14px 0;
       flex-shrink: 0;
     }
 
@@ -492,7 +492,7 @@
     }
     .btn-mode-mcq:hover { background-color: var(--color-primary-hover); }
 
-    /* PBQ — outlined */
+    /* PBQ — outlined, colored per exam */
     .btn-mode-pbq {
       background-color: transparent;
       color: var(--color-text-secondary);
@@ -501,6 +501,19 @@
       border-color: var(--color-text-secondary);
       color: var(--color-text-primary);
     }
+
+    /* Per-exam PBQ button accent colors */
+    .btn-pbq-core1 { border-color: var(--accent-core1); color: var(--accent-core1); }
+    .btn-pbq-core1:hover { background-color: var(--accent-core1-bg); }
+
+    .btn-pbq-core2 { border-color: var(--accent-core2); color: var(--accent-core2); }
+    .btn-pbq-core2:hover { background-color: var(--accent-core2-bg); }
+
+    .btn-pbq-net { border-color: var(--accent-net); color: var(--accent-net); }
+    .btn-pbq-net:hover { background-color: var(--accent-net-bg); }
+
+    .btn-pbq-sec { border-color: var(--accent-sec); color: var(--accent-sec); }
+    .btn-pbq-sec:hover { background-color: var(--accent-sec-bg); }
 
 
     /* =============================================
@@ -589,7 +602,7 @@
             <div class="mode-buttons">
               <button type="button" class="btn-mode btn-mode-mcq"
                 onclick="window.location.href='quiz.html?exam=core1'">Multiple Choice</button>
-              <button type="button" class="btn-mode btn-mode-pbq"
+              <button type="button" class="btn-mode btn-mode-pbq btn-pbq-core1"
                 onclick="window.location.href='pbq.html?exam=core1'">Performance-Based</button>
             </div>
           </div>
@@ -605,7 +618,7 @@
             <div class="mode-buttons">
               <button type="button" class="btn-mode btn-mode-mcq"
                 onclick="window.location.href='quiz.html?exam=core2'">Multiple Choice</button>
-              <button type="button" class="btn-mode btn-mode-pbq"
+              <button type="button" class="btn-mode btn-mode-pbq btn-pbq-core2"
                 onclick="window.location.href='pbq.html?exam=core2'">Performance-Based</button>
             </div>
           </div>
@@ -630,7 +643,7 @@
           <div class="mode-buttons">
             <button type="button" class="btn-mode btn-mode-mcq"
               onclick="window.location.href='quiz.html?exam=netplus'">Multiple Choice</button>
-            <button type="button" class="btn-mode btn-mode-pbq"
+            <button type="button" class="btn-mode btn-mode-pbq btn-pbq-net"
               onclick="window.location.href='pbq.html?exam=netplus'">Performance-Based</button>
           </div>
         </div>
@@ -653,7 +666,7 @@
           <div class="mode-buttons">
             <button type="button" class="btn-mode btn-mode-mcq"
               onclick="window.location.href='quiz.html?exam=secplus'">Multiple Choice</button>
-            <button type="button" class="btn-mode btn-mode-pbq"
+            <button type="button" class="btn-mode btn-mode-pbq btn-pbq-sec"
               onclick="window.location.href='pbq.html?exam=secplus'">Performance-Based</button>
           </div>
         </div>
