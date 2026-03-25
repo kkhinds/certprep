@@ -808,7 +808,12 @@ Return ONLY a valid JSON object — no explanation, no markdown, no code block. 
         btn.className = 'answer-btn';
 
         /* Each button shows the letter and the option text */
-        btn.innerHTML = `<span class="answer-letter">${letter}</span><span>${q.options[letter]}</span>`;
+        const letterSpan = document.createElement('span');
+        letterSpan.className = 'answer-letter';
+        letterSpan.textContent = letter;
+        const optionSpan = document.createElement('span');
+        optionSpan.textContent = q.options[letter];
+        btn.append(letterSpan, optionSpan);
 
         /* When clicked, call checkAnswer with the letter and the full question */
         btn.onclick = () => checkAnswer(letter, q);

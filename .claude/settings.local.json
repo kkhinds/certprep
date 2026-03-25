@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -n \"innerHTML.*\\\\`\\\\|innerHTML.*$\" /e/GitHJub/certprep/quiz.html /e/GitHJub/certprep/pbq.html)"
+    ]
+  }
+}

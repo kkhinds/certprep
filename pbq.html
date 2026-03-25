@@ -895,11 +895,16 @@ IMPORTANT: "steps" must be in the correct order. "shuffled" must be the same ste
       const row = document.createElement('div');
       row.className       = `match-pair-row pair-${colorIdx}`;
       row.dataset.leftVal = left;
-      row.innerHTML = `
-        <span class="match-pair-left">${left}</span>
-        <span class="match-pair-arrow">→</span>
-        <span class="match-pair-right">${right}</span>
-      `;
+      const leftSpan = document.createElement('span');
+      leftSpan.className = 'match-pair-left';
+      leftSpan.textContent = left;
+      const arrowSpan = document.createElement('span');
+      arrowSpan.className = 'match-pair-arrow';
+      arrowSpan.textContent = '→';
+      const rightSpan = document.createElement('span');
+      rightSpan.className = 'match-pair-right';
+      rightSpan.textContent = right;
+      row.append(leftSpan, arrowSpan, rightSpan);
       display.appendChild(row);
     }
 
@@ -967,14 +972,16 @@ IMPORTANT: "steps" must be in the correct order. "shuffled" must be the same ste
         li.className       = 'order-item';
         li.dataset.text    = step;
 
-        li.innerHTML = `
-          <span class="order-num">${index + 1}</span>
-          <span class="order-text">${step}</span>
-          <div class="order-controls">
-            <button class="order-btn" onclick="moveStep(this, -1)" title="Move up">&#9650;</button>
-            <button class="order-btn" onclick="moveStep(this, 1)"  title="Move down">&#9660;</button>
-          </div>
-        `;
+        const numSpan = document.createElement('span');
+        numSpan.className = 'order-num';
+        numSpan.textContent = index + 1;
+        const textSpan = document.createElement('span');
+        textSpan.className = 'order-text';
+        textSpan.textContent = step;
+        const controls = document.createElement('div');
+        controls.className = 'order-controls';
+        controls.innerHTML = '<button class="order-btn" onclick="moveStep(this, -1)" title="Move up">&#9650;</button><button class="order-btn" onclick="moveStep(this, 1)" title="Move down">&#9660;</button>';
+        li.append(numSpan, textSpan, controls);
         list.appendChild(li);
       });
 
