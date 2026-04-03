@@ -29,7 +29,7 @@ If that command returns anything, DO NOT push. Remove the key first.
 
 ## Hosting & Deployment
 - **Platform**: GitHub Pages (free, public repo)
-- **Live URL**: https://yourusername.github.io/certprep  ← update this once live
+- **Live URL**: https://kkhinds.github.io/certprep  ← update this once live
 - **Branch**: main (GitHub Pages serves from the main branch root)
 
 ### How GitHub Pages works (learn this once, use it everywhere)

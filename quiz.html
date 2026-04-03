@@ -30,6 +30,7 @@
       --color-success-bg:     rgba(22, 163, 74, 0.15);
       --color-error:          #dc2626;
       --color-error-bg:       rgba(220, 38, 38, 0.15);
+      --color-warning:        #f59e0b;
       --font-base: 'DM Sans', sans-serif;
       --radius-card:   12px;
       --radius-button:  8px;
@@ -170,6 +171,48 @@
     }
 
     /* =============================================
+       TIMER DISPLAY
+       Only visible during exam mode. Shows a countdown
+       and turns red when under 10 minutes remain.
+    ============================================= */
+    .timer-display {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-badge);
+      padding: 8px 16px;
+      font-size: 0.88rem;
+      color: var(--color-text-secondary);
+      white-space: nowrap;
+      transition: border-color 0.3s, background-color 0.3s;
+    }
+
+    .timer-display .timer-icon { font-size: 1rem; }
+
+    #timerText {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      font-variant-numeric: tabular-nums; /* Stops the numbers jumping around */
+      letter-spacing: 0.05em;
+    }
+
+    /* Warning state — turns amber under 10 mins, red under 5 mins */
+    .timer-display.timer-warning {
+      border-color: var(--color-warning);
+      background-color: rgba(245,158,11,0.1);
+    }
+    .timer-display.timer-warning #timerText { color: var(--color-warning); }
+
+    .timer-display.timer-critical {
+      border-color: var(--color-error);
+      background-color: rgba(220,38,38,0.1);
+    }
+    .timer-display.timer-critical #timerText { color: var(--color-error); }
+
+    /* =============================================
        SHARED CARD STYLE
        Used for topic selector, question, and feedback.
     ============================================= */
@@ -184,6 +227,85 @@
     @media (min-width: 640px) {
       .card { padding: 36px 32px; }
     }
+
+    /* =============================================
+       MODE SELECTOR
+       Two large toggle buttons — Practice or Exam Mode.
+       Shown at the top of the topic card.
+    ============================================= */
+    .mode-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .mode-btn {
+      background-color: var(--color-bg);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-button);
+      padding: 14px 12px;
+      color: var(--color-text-secondary);
+      font-family: var(--font-base);
+      font-size: 0.88rem;
+      font-weight: 700;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s, background-color 0.15s;
+      line-height: 1.4;
+    }
+
+    .mode-btn small {
+      display: block;
+      font-weight: 400;
+      font-size: 0.78rem;
+      color: var(--color-text-secondary);
+      margin-top: 4px;
+    }
+
+    .mode-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-text-primary);
+    }
+
+    /* The active / selected mode button */
+    .mode-btn.active {
+      border-color: var(--color-primary);
+      background-color: rgba(59,130,246,0.1);
+      color: var(--color-text-primary);
+    }
+
+    /* Exam mode button uses a warning colour when active */
+    .mode-btn.active.exam-mode-btn {
+      border-color: var(--color-warning);
+      background-color: rgba(245,158,11,0.1);
+      color: var(--color-text-primary);
+    }
+
+    .mode-btn.active.exam-mode-btn small { color: var(--color-warning); }
+
+    /* =============================================
+       EXAM MODE INFO BOX
+       Replaces the topic grid when exam mode is selected.
+    ============================================= */
+    .exam-mode-info {
+      background-color: rgba(245,158,11,0.08);
+      border: 1px solid rgba(245,158,11,0.3);
+      border-radius: var(--radius-button);
+      padding: 16px 18px;
+      margin-bottom: 20px;
+    }
+
+    .exam-mode-info p {
+      font-size: 0.88rem;
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .exam-mode-info p:last-child { margin-bottom: 0; }
+
+    .exam-mode-info strong { color: var(--color-text-primary); }
 
     /* =============================================
        TOPIC SELECTOR
@@ -274,6 +396,56 @@
       transform: none;
     }
 
+    /* Exam mode start button uses the warning/amber colour */
+    .btn-primary.btn-exam {
+      background-color: var(--color-warning);
+    }
+    .btn-primary.btn-exam:hover  { background-color: #d97706; }
+    .btn-primary.btn-exam:disabled {
+      background-color: var(--color-border);
+      color: var(--color-text-secondary);
+    }
+
+    /* =============================================
+       PBQ BADGE
+       Appears next to the question count on performance-based questions.
+    ============================================= */
+    .pbq-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: var(--radius-badge);
+      background: rgba(245,158,11,0.15);
+      border: 1px solid rgba(245,158,11,0.4);
+      color: #f59e0b;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    /* =============================================
+       PROGRESS BAR
+       A thin bar under the question count showing how far
+       through the test the student is.
+    ============================================= */
+    .progress-bar-track {
+      width: 100%;
+      height: 4px;
+      background-color: var(--color-border);
+      border-radius: 2px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background-color: var(--color-primary);
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
     /* =============================================
        LOADING STATE
        Shown while the API call is in progress.
@@ -290,13 +462,10 @@
       border: 3px solid var(--color-border);
       border-top-color: var(--color-primary);
       border-radius: 50%;
-      /* animation: spin 0.8s linear infinite — spins the element forever */
       animation: spin 0.8s linear infinite;
       margin: 0 auto 20px;
     }
 
-    /* @keyframes defines what the animation does.
-       "spin" rotates the element from 0° to 360° */
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
@@ -309,11 +478,11 @@
     /* =============================================
        QUESTION CARD
     ============================================= */
-    /* Progress line at the top — "Question 3 of 10" */
+    /* Progress line at the top — "Question 3 of 20" */
     .question-meta {
       font-size: 0.8rem;
       color: var(--color-text-secondary);
-      margin-bottom: 16px;
+      margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
     }
@@ -359,7 +528,7 @@
     .answer-letter {
       font-weight: 700;
       color: var(--color-text-secondary);
-      flex-shrink: 0; /* Don't let the letter get squished */
+      flex-shrink: 0;
       font-size: 0.85rem;
       margin-top: 1px;
     }
@@ -392,6 +561,7 @@
     /* =============================================
        FEEDBACK SECTION
        Shown below the question after the student answers.
+       Hidden in exam mode — no explanations during the test.
     ============================================= */
     .feedback {
       margin-top: 20px;
@@ -405,14 +575,14 @@
     .feedback.correct {
       background-color: var(--color-success-bg);
       border: 1px solid var(--color-success);
-      color: #bbf7d0; /* Light green text */
+      color: #bbf7d0;
       display: block;
     }
 
     .feedback.wrong {
       background-color: var(--color-error-bg);
       border: 1px solid var(--color-error);
-      color: #fecaca; /* Light red text */
+      color: #fecaca;
       display: block;
     }
 
@@ -422,30 +592,154 @@
       font-size: 0.95rem;
     }
 
+    /* Exam mode: show a minimal status line instead of explanation */
+    .exam-answer-status {
+      margin-top: 16px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      display: none;
+    }
+    .exam-answer-status.correct { color: var(--color-success); display: block; }
+    .exam-answer-status.wrong   { color: var(--color-error);   display: block; }
+
     /* =============================================
        NEXT QUESTION BUTTON
        Appears after the student answers.
     ============================================= */
     .btn-next {
       margin-top: 20px;
-      display: none; /* Hidden until an answer is selected */
+      display: none;
     }
 
     .btn-next.visible { display: block; }
 
-    /* When retrying after a wrong answer, use the error colour
-       so the student can see at a glance they need to try again */
+    /* "Try Again" variant — red button for wrong answers in practice mode */
     .btn-next[data-retrying="true"] {
       background-color: var(--color-error);
     }
-    .btn-next[data-retrying="true"]:hover {
-      background-color: #b91c1c;
+    .btn-next[data-retrying="true"]:hover { background-color: #b91c1c; }
+
+    /* "See Results" variant — green button at end of test */
+    .btn-next.btn-finish {
+      background-color: var(--color-success);
+    }
+    .btn-next.btn-finish:hover { background-color: #15803d; }
+
+    /* =============================================
+       RESULTS CARD
+       Full-screen summary shown when the test ends.
+       Shows score, pass/fail (exam mode), and time taken.
+    ============================================= */
+    .results-card {
+      text-align: center;
+    }
+
+    .results-icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+      line-height: 1;
+    }
+
+    .results-heading {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .results-sub {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      margin-bottom: 28px;
+    }
+
+    /* The big score number */
+    .results-score-block {
+      display: inline-block;
+      margin-bottom: 24px;
+    }
+
+    .results-percent {
+      font-size: 3.5rem;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+
+    .results-fraction {
+      font-size: 1rem;
+      color: var(--color-text-secondary);
+      margin-top: 4px;
+    }
+
+    /* Pass / Fail badge */
+    .result-badge {
+      display: inline-block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 6px 18px;
+      border-radius: var(--radius-badge);
+      margin-bottom: 24px;
+    }
+
+    .result-badge.pass {
+      background-color: var(--color-success-bg);
+      border: 1px solid var(--color-success);
+      color: #86efac;
+    }
+
+    .result-badge.fail {
+      background-color: var(--color-error-bg);
+      border: 1px solid var(--color-error);
+      color: #fca5a5;
+    }
+
+    /* Stats row — time taken, pass mark reminder */
+    .results-stats {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .results-stat {
+      text-align: center;
+    }
+
+    .results-stat-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--color-text-primary);
+    }
+
+    .results-stat-label {
+      font-size: 0.78rem;
+      color: var(--color-text-secondary);
+      margin-top: 2px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--color-border);
+      margin: 24px 0;
+    }
+
+    /* Times up warning */
+    .times-up-notice {
+      background-color: var(--color-error-bg);
+      border: 1px solid var(--color-error);
+      border-radius: var(--radius-button);
+      padding: 12px 16px;
+      font-size: 0.88rem;
+      color: #fca5a5;
+      margin-bottom: 20px;
+      font-weight: 700;
     }
 
     /* =============================================
        HIDDEN UTILITY CLASS
-       JavaScript adds/removes this to show and hide sections.
-       display: none removes the element from the layout entirely.
     ============================================= */
     .hidden { display: none !important; }
 
@@ -482,27 +776,70 @@
         <span id="examBadge" class="exam-badge"></span>
         <h1 id="examTitle" class="exam-title"></h1>
       </div>
-      <div class="score-display">
+
+      <!-- Score pill — always visible -->
+      <div class="score-display" id="scoreDisplay">
         Score: <span id="scoreCorrect">0</span> / <span id="scoreTotal">0</span>
+      </div>
+
+      <!-- Timer — only shown during exam mode -->
+      <div id="timerDisplay" class="timer-display hidden">
+        <span class="timer-icon">&#9201;</span>
+        <span id="timerText">135:00</span>
       </div>
     </div>
 
     <!--
       TOPIC SELECTOR
-      Shown first. JavaScript populates the topic buttons based on the exam.
-      Hidden once the student starts the quiz.
+      Shown first. Students pick a mode, then (for practice) pick a topic.
+      Hidden once the test starts.
     -->
     <div id="topicSection" class="card">
-      <p class="section-heading">Choose a topic</p>
-      <p class="section-sub">
-        Select a domain from the official CompTIA exam objectives.
-        Each question will be generated specifically for that topic.
-      </p>
-      <div id="topicGrid" class="topic-grid">
-        <!-- Topic buttons are injected here by JavaScript -->
+
+      <!-- Step 1: choose Practice or Exam Mode -->
+      <p class="section-heading">Select mode</p>
+      <div class="mode-selector">
+        <button class="mode-btn active" id="practiceBtn" onclick="selectMode('practice')">
+          Practice Quiz
+          <small>20 questions &bull; Pick a topic &bull; Explanations included</small>
+        </button>
+        <button class="mode-btn exam-mode-btn" id="examModeBtn" onclick="selectMode('exam')">
+          Exam Mode
+          <small>90 questions &bull; 135 min timer &bull; 80% to pass</small>
+        </button>
       </div>
+
+      <!-- Step 2a: Practice — pick a topic -->
+      <div id="practiceOptions">
+        <p class="section-heading">Choose a topic</p>
+        <p class="section-sub">
+          Select a domain from the official CompTIA exam objectives.
+          Each question is generated specifically for that topic.
+        </p>
+        <div id="topicGrid" class="topic-grid">
+          <!-- Topic buttons are injected here by JavaScript -->
+        </div>
+      </div>
+
+      <!-- Step 2b: Exam Mode — info panel (no topic choice needed) -->
+      <div id="examOptions" class="exam-mode-info hidden">
+        <p>
+          <strong>This simulates the real CompTIA exam experience.</strong>
+        </p>
+        <p>
+          You will receive <strong>90 questions</strong> drawn from all topics across the exam.
+          You have <strong>135 minutes</strong> to complete it.
+          The <strong>pass mark is 80%</strong> (72 correct out of 90).
+        </p>
+        <p>
+          No explanations are shown during the exam — just like the real thing.
+          You will see a full results summary at the end.
+        </p>
+      </div>
+
+      <!-- Start button — text and style change based on selected mode -->
       <button id="startBtn" class="btn-primary" disabled onclick="startQuiz()">
-        Start Quiz
+        Start Practice Quiz
       </button>
     </div>
 
@@ -512,7 +849,7 @@
     -->
     <div id="loadingSection" class="card loading-card hidden">
       <div class="spinner"></div>
-      <p class="loading-text">Generating your question...</p>
+      <p class="loading-text" id="loadingText">Generating your question...</p>
     </div>
 
     <!--
@@ -520,9 +857,20 @@
       Shown when a question has loaded. Hidden at first.
     -->
     <div id="questionSection" class="card hidden">
+
+      <!-- "Question 7 of 20" + PBQ badge (if applicable) + current topic -->
       <div class="question-meta">
-        <span id="questionCount">Question 1</span>
+        <span>
+          <span id="questionCount">Question 1 of 20</span>
+          <!-- PBQ badge — only shown on performance-based questions -->
+          <span id="pbqBadge" class="pbq-badge hidden">Performance-Based</span>
+        </span>
         <span id="topicLabel"></span>
+      </div>
+
+      <!-- Progress bar showing how far through the test the student is -->
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progressFill" style="width: 0%"></div>
       </div>
 
       <p id="questionText" class="question-text"></p>
@@ -530,16 +878,70 @@
       <!-- Answer buttons — filled in by JavaScript -->
       <div id="answerGrid" class="answer-grid"></div>
 
-      <!-- Feedback box — shown after the student picks an answer -->
+      <!-- Practice mode: full feedback with explanation -->
       <div id="feedback" class="feedback">
         <p class="feedback-label" id="feedbackLabel"></p>
         <p id="feedbackText"></p>
       </div>
 
-      <!-- Next Question button — appears after answering -->
+      <!-- Exam mode: minimal correct/wrong status, no explanation -->
+      <p id="examAnswerStatus" class="exam-answer-status"></p>
+
+      <!-- Next / Try Again / See Results button -->
       <button id="nextBtn" class="btn-primary btn-next" onclick="nextQuestion()">
         Next Question
       </button>
+    </div>
+
+    <!--
+      RESULTS CARD
+      Shown at the end of the test (all questions answered or time runs out).
+    -->
+    <div id="resultsSection" class="card results-card hidden">
+
+      <!-- Times-up notice — only shown if the timer ran out -->
+      <p id="timesUpNotice" class="times-up-notice hidden">
+        Time's up! The exam has ended automatically.
+      </p>
+
+      <div id="resultsIcon" class="results-icon"></div>
+      <h2 id="resultsHeading" class="results-heading"></h2>
+      <p id="resultsSub" class="results-sub"></p>
+
+      <!-- Big percentage score -->
+      <div class="results-score-block">
+        <div id="resultsPercent" class="results-percent"></div>
+        <div id="resultsFraction" class="results-fraction"></div>
+      </div>
+
+      <!-- Pass / Fail badge — exam mode only -->
+      <div>
+        <span id="resultsPassFail" class="result-badge hidden"></span>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- Stats row: time taken and pass mark -->
+      <div class="results-stats">
+        <div class="results-stat">
+          <div id="resultsTime" class="results-stat-value">—</div>
+          <div class="results-stat-label">Time taken</div>
+        </div>
+        <div class="results-stat" id="passMarkStat">
+          <div class="results-stat-value">80%</div>
+          <div class="results-stat-label">Pass mark</div>
+        </div>
+        <div class="results-stat">
+          <div id="resultsCorrectStat" class="results-stat-value"></div>
+          <div class="results-stat-label">Correct answers</div>
+        </div>
+      </div>
+
+      <!-- Restart button -->
+      <button class="btn-primary" onclick="restartQuiz()">
+        Try Another Test
+      </button>
+
     </div>
 
   </main>
@@ -549,8 +951,7 @@
      * =============================================
      * EXAM CONFIGURATION
      * Each exam has a badge style, display name, and list of
-     * official CompTIA objective domains. These are the topics
-     * students can pick from.
+     * official CompTIA exam objective domains.
      * =============================================
      */
     const EXAMS = {
@@ -565,6 +966,18 @@
           'Virtualization & Cloud Computing',
           'Hardware & Network Troubleshooting',
         ],
+        /*
+         * Official CompTIA domain weights for 220-1201.
+         * These percentages control how many of the 85 MCQ questions
+         * come from each domain — matching the real exam balance.
+         */
+        weights: {
+          'Mobile Devices':                     15,
+          'Networking Fundamentals':            20,
+          'Hardware':                           25,
+          'Virtualization & Cloud Computing':   11,
+          'Hardware & Network Troubleshooting': 29,
+        },
       },
       core2: {
         badge:    'Core 2',
@@ -576,6 +989,13 @@
           'Software Troubleshooting',
           'Operational Procedures',
         ],
+        /* Official CompTIA domain weights for 220-1202 */
+        weights: {
+          'Operating Systems':       31,
+          'Security':                25,
+          'Software Troubleshooting': 22,
+          'Operational Procedures':  22,
+        },
       },
       netplus: {
         badge:    'Network+',
@@ -588,6 +1008,14 @@
           'Network Security',
           'Network Troubleshooting',
         ],
+        /* Official CompTIA domain weights for N10-009 */
+        weights: {
+          'Networking Concepts':     23,
+          'Network Implementation':  20,
+          'Network Operations':      17,
+          'Network Security':        20,
+          'Network Troubleshooting': 20,
+        },
       },
       secplus: {
         badge:    'Security+',
@@ -600,6 +1028,14 @@
           'Security Operations',
           'Security Program Management & Oversight',
         ],
+        /* Official CompTIA domain weights for SY0-701 */
+        weights: {
+          'General Security Concepts':                  12,
+          'Threats, Vulnerabilities & Mitigations':     22,
+          'Security Architecture':                      18,
+          'Security Operations':                        28,
+          'Security Program Management & Oversight':    20,
+        },
       },
     };
 
@@ -612,14 +1048,31 @@
     /*
      * =============================================
      * STATE
-     * These variables track what's happening in the quiz session.
+     * These variables track everything about the current session.
      * =============================================
      */
-    let currentExam   = null;  // The exam config object (from EXAMS above)
-    let selectedTopic = null;  // Which topic the student picked
-    let questionNum   = 0;     // How many questions have been asked
-    let scoreCorrect  = 0;     // How many the student got right
-    let scoreTotal    = 0;     // Total questions answered
+    let currentExam   = null;   // The exam config object (from EXAMS above)
+    let selectedTopic = null;   // Which topic the student picked (practice mode)
+    let questionNum   = 0;      // How many questions have been asked so far
+    let scoreCorrect  = 0;      // How many the student got right
+    let scoreTotal    = 0;      // Total questions answered
+
+    /* Mode + limit tracking */
+    let isExamMode    = false;  // true = exam mode, false = practice mode
+    let maxQuestions  = 20;     // 20 for practice, 90 for exam
+
+    /*
+     * Exam question queue — built once when the exam starts.
+     * Each entry is { type: 'pbq' | 'mcq', topic: 'Topic Name' }.
+     * The first 5 are PBQs, the rest are MCQs distributed by domain weight.
+     */
+    let examQuestionQueue   = [];
+    let currentQuestionType = 'mcq'; // set per question when pulling from the queue
+
+    /* Timer state */
+    let timerInterval = null;   // holds the setInterval reference so we can cancel it
+    let timeRemaining = 0;      // seconds left on the countdown
+    let examStartTime = 0;      // Date.now() when the test began (for elapsed time)
 
     /*
      * =============================================
@@ -628,14 +1081,9 @@
      * =============================================
      */
     function init() {
-      /*
-       * URLSearchParams lets us read query string values easily.
-       * e.g. quiz.html?exam=core1  →  params.get('exam') === 'core1'
-       */
-      const params = new URLSearchParams(window.location.search);
+      const params  = new URLSearchParams(window.location.search);
       const examKey = params.get('exam');
 
-      /* If the URL has no valid exam param, redirect home */
       if (!examKey || !EXAMS[examKey]) {
         window.location.href = 'index.html';
         return;
@@ -645,12 +1093,52 @@
 
       /* Fill in the exam badge and title */
       const badge = document.getElementById('examBadge');
-      badge.textContent  = currentExam.badge;
-      badge.className    = 'exam-badge ' + currentExam.badgeClass;
+      badge.textContent = currentExam.badge;
+      badge.className   = 'exam-badge ' + currentExam.badgeClass;
       document.getElementById('examTitle').textContent = currentExam.title;
 
-      /* Build the topic buttons */
+      /* Build the topic buttons for practice mode */
       buildTopicGrid();
+    }
+
+    /*
+     * =============================================
+     * MODE SELECTOR
+     * Called when the student clicks Practice Quiz or Exam Mode.
+     * Swaps the UI between topic selection and exam info panel.
+     * =============================================
+     */
+    function selectMode(mode) {
+      isExamMode = (mode === 'exam');
+
+      const practiceBtn  = document.getElementById('practiceBtn');
+      const examModeBtn  = document.getElementById('examModeBtn');
+      const practiceOpts = document.getElementById('practiceOptions');
+      const examOpts     = document.getElementById('examOptions');
+      const startBtn     = document.getElementById('startBtn');
+
+      if (isExamMode) {
+        /* Switch to exam mode UI */
+        practiceBtn.classList.remove('active');
+        examModeBtn.classList.add('active');
+        practiceOpts.classList.add('hidden');
+        examOpts.classList.remove('hidden');
+        startBtn.textContent = 'Start Exam';
+        startBtn.className   = 'btn-primary btn-exam';
+        startBtn.disabled    = false; /* Exam needs no topic selection */
+        maxQuestions         = 90;
+      } else {
+        /* Switch back to practice mode UI */
+        examModeBtn.classList.remove('active');
+        practiceBtn.classList.add('active');
+        examOpts.classList.add('hidden');
+        practiceOpts.classList.remove('hidden');
+        startBtn.textContent = 'Start Practice Quiz';
+        startBtn.className   = 'btn-primary';
+        maxQuestions         = 20;
+        /* Re-disable the button if no topic is selected */
+        startBtn.disabled = !selectedTopic;
+      }
     }
 
     /*
@@ -659,48 +1147,197 @@
      */
     function buildTopicGrid() {
       const grid = document.getElementById('topicGrid');
-      grid.innerHTML = ''; /* Clear any existing buttons */
+      grid.innerHTML = '';
 
       currentExam.topics.forEach(topic => {
-        const btn = document.createElement('button');
+        const btn       = document.createElement('button');
         btn.type        = 'button';
         btn.className   = 'topic-btn';
         btn.textContent = topic;
-        /* When clicked, call selectTopic and pass this topic string */
-        btn.onclick = () => selectTopic(topic, btn);
+        btn.onclick     = () => selectTopic(topic, btn);
         grid.appendChild(btn);
       });
     }
 
-    /* Called when the student clicks a topic button */
+    /* Called when the student clicks a topic button (practice mode only) */
     function selectTopic(topic, clickedBtn) {
       selectedTopic = topic;
 
-      /* Remove 'selected' class from all topic buttons */
       document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('selected'));
-
-      /* Add 'selected' to the one that was clicked */
       clickedBtn.classList.add('selected');
 
-      /* Enable the Start Quiz button now that a topic is chosen */
-      document.getElementById('startBtn').disabled = false;
+      /* Enable the Start button now that a topic is chosen */
+      if (!isExamMode) {
+        document.getElementById('startBtn').disabled = false;
+      }
     }
 
     /*
      * =============================================
      * START QUIZ
-     * Called when the student clicks "Start Quiz".
-     * Hides the topic selector and fetches the first question.
+     * Called when the student clicks "Start Practice Quiz" or "Start Exam".
+     * Resets state, hides the topic selector, and fetches the first question.
      * =============================================
      */
     function startQuiz() {
-      if (!selectedTopic) return;
+      /* Practice mode requires a topic to be selected */
+      if (!isExamMode && !selectedTopic) return;
 
-      /* Hide the topic selector */
-      document.getElementById('topicSection').classList.add('hidden');
+      /* Reset score and question counter */
+      questionNum  = 0;
+      scoreCorrect = 0;
+      scoreTotal   = 0;
+      examStartTime = Date.now();
+      updateScoreDisplay();
 
-      questionNum = 0;
+      /* Hide topic selector */
+      hide('topicSection');
+
+      if (isExamMode) {
+        /*
+         * Build the pre-planned question queue.
+         * 5 PBQs first, then 85 MCQs distributed by official domain weights.
+         * This is done once up-front so every question has its topic
+         * and type decided before the exam starts.
+         */
+        examQuestionQueue = buildExamQueue();
+
+        /* Set up and start the 135-minute countdown */
+        timeRemaining = 135 * 60;
+        updateTimerDisplay();
+        show('timerDisplay');
+        startTimer();
+
+        document.getElementById('loadingText').textContent = 'Loading performance-based question 1 of 5...';
+      } else {
+        document.getElementById('loadingText').textContent = 'Generating your question...';
+      }
+
       fetchQuestion();
+    }
+
+    /*
+     * =============================================
+     * TIMER — exam mode only
+     * Counts down from 135:00. Turns amber under 10 mins,
+     * red under 5 mins. Auto-submits when it hits zero.
+     * =============================================
+     */
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        timeRemaining--;
+        updateTimerDisplay();
+
+        if (timeRemaining <= 0) {
+          /* Time's up — end the exam immediately */
+          clearInterval(timerInterval);
+          showResults(true);
+        }
+      }, 1000);
+    }
+
+    /*
+     * =============================================
+     * EXAM QUEUE BUILDER
+     * Produces the ordered list of 90 question slots:
+     *   - Slots 1–5:  Performance-Based Questions (PBQ), one per topic cycle
+     *   - Slots 6–90: Multiple Choice Questions (MCQ), distributed by domain weight
+     *
+     * Using official CompTIA weightings means the exam reflects exactly
+     * how much each domain appears on the real test.
+     * =============================================
+     */
+    function buildExamQueue() {
+      const queue  = [];
+      const topics = currentExam.topics;
+
+      /* --- First 5 slots: one PBQ per topic (cycling if fewer than 5 topics) --- */
+      for (let i = 0; i < 5; i++) {
+        queue.push({ type: 'pbq', topic: topics[i % topics.length] });
+      }
+
+      /* --- Remaining 85 slots: MCQs distributed by official domain weight --- */
+      const mcqCounts = distributeByWeight(85);
+
+      /*
+       * Build a flat array of topic strings in proportion to their weights,
+       * then shuffle it so the domains are mixed throughout the exam.
+       */
+      const mcqSlots = [];
+      topics.forEach((topic, i) => {
+        for (let j = 0; j < mcqCounts[i]; j++) {
+          mcqSlots.push({ type: 'mcq', topic });
+        }
+      });
+
+      shuffleArray(mcqSlots);
+      queue.push(...mcqSlots);
+
+      return queue;
+    }
+
+    /*
+     * Distribute `total` questions across topics using their official weight percentages.
+     * Uses the "largest remainder method" to ensure the numbers add up exactly to total
+     * without rounding errors.
+     *
+     * Example for Core 1 with 85 questions:
+     *   Hardware (25%) → 21, Troubleshooting (29%) → 25,
+     *   Networking (20%) → 17, Mobile (15%) → 13, Cloud (11%) → 9  = 85 ✓
+     */
+    function distributeByWeight(total) {
+      const topics  = currentExam.topics;
+      const weights = currentExam.weights;
+
+      /* Step 1: calculate exact (decimal) question counts */
+      const exact  = topics.map(t => (weights[t] / 100) * total);
+
+      /* Step 2: floor everything — this may leave some questions unassigned */
+      const floors = exact.map(Math.floor);
+      let spare    = total - floors.reduce((a, b) => a + b, 0);
+
+      /* Step 3: give the leftover questions to the topics with the largest remainders */
+      const remainders = exact
+        .map((v, i) => ({ i, frac: v - Math.floor(v) }))
+        .sort((a, b) => b.frac - a.frac);
+
+      for (let k = 0; k < spare; k++) {
+        floors[remainders[k].i]++;
+      }
+
+      return floors; /* e.g. [13, 17, 21, 9, 25] for Core 1 */
+    }
+
+    /*
+     * Fisher-Yates shuffle — randomly reorders an array in place.
+     * Used to mix the MCQ topics so domains aren't grouped together.
+     */
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        /* Swap elements i and j */
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(timeRemaining / 60);
+      const secs = timeRemaining % 60;
+
+      /* padStart(2, '0') ensures "5" becomes "05" so the display doesn't jump */
+      document.getElementById('timerText').textContent =
+        String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+
+      const timerEl = document.getElementById('timerDisplay');
+      if (timeRemaining <= 300) {
+        /* Under 5 minutes — critical (red) */
+        timerEl.className = 'timer-display timer-critical';
+      } else if (timeRemaining <= 600) {
+        /* Under 10 minutes — warning (amber) */
+        timerEl.className = 'timer-display timer-warning';
+      } else {
+        timerEl.className = 'timer-display';
+      }
     }
 
     /*
@@ -713,17 +1350,60 @@
     async function fetchQuestion() {
       questionNum++;
 
+      if (isExamMode) {
+        /*
+         * Pull the next slot from the pre-built queue.
+         * questionNum is 1-based, so the first queue item is at index 0.
+         */
+        const slot           = examQuestionQueue[questionNum - 1];
+        selectedTopic        = slot.topic;
+        currentQuestionType  = slot.type;
+
+        /* Update loading text to tell the student what's coming */
+        if (currentQuestionType === 'pbq') {
+          document.getElementById('loadingText').textContent =
+            'Loading performance-based question ' + questionNum + ' of 5...';
+        } else {
+          document.getElementById('loadingText').textContent =
+            'Loading question ' + questionNum + ' of 90...';
+        }
+      } else {
+        currentQuestionType = 'mcq'; /* Practice mode is always MCQ */
+      }
+
       /* Show the loading spinner, hide the question card */
       show('loadingSection');
       hide('questionSection');
 
       /*
-       * Build the prompt.
-       * We ask Claude to return ONLY JSON — no extra words.
-       * The exact JSON shape we need is defined here so we can
-       * reliably parse it in JavaScript.
+       * Choose the right prompt based on question type.
+       *
+       * MCQ: standard 4-option multiple choice with explanation.
+       * PBQ: scenario-based question that mirrors the style of
+       *      CompTIA performance-based questions (realistic workplace
+       *      scenario, practical decision-making required).
        */
-      const prompt = `You are a CompTIA exam question writer. Generate one multiple choice question for the ${currentExam.title} exam about the topic: "${selectedTopic}".
+      let prompt;
+
+      if (currentQuestionType === 'pbq') {
+        prompt = `You are a CompTIA exam question writer creating a Performance-Based Question (PBQ) for the ${currentExam.title} exam, domain: "${selectedTopic}".
+
+PBQs present a realistic workplace scenario and test hands-on, practical knowledge. The scenario should be 2-4 sentences describing a specific situation a technician or IT professional would face. End with a clear question asking what the best course of action is.
+
+Return ONLY a valid JSON object — no explanation, no markdown, no code block:
+{
+  "question": "Full scenario description here. End with the specific question to answer.",
+  "options": {
+    "A": "First option",
+    "B": "Second option",
+    "C": "Third option",
+    "D": "Fourth option"
+  },
+  "correct": "A",
+  "explanation": "A clear explanation of why the correct answer is right and why the others are wrong. Written for a beginner student."
+}`;
+      } else {
+        prompt = `You are a CompTIA exam question writer. Generate one multiple choice question for the ${currentExam.title} exam about the topic: "${selectedTopic}".
 
 Return ONLY a valid JSON object — no explanation, no markdown, no code block. Use exactly this structure:
 {
@@ -737,42 +1417,28 @@ Return ONLY a valid JSON object — no explanation, no markdown, no code block. 
   "correct": "A",
   "explanation": "A clear explanation of why the correct answer is right and why the others are wrong. Written for a beginner student."
 }`;
+      }
 
       try {
-        /*
-         * fetch() sends an HTTP request and returns a Promise.
-         * "await" pauses here until the response comes back.
-         * This is "async JavaScript" — the page stays responsive
-         * while it waits (doesn't freeze the browser).
-         */
         const response = await fetch(WORKER_URL, {
-          method: 'POST',
+          method:  'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt }),
+          body:    JSON.stringify({ prompt }),
         });
 
-        /* Parse the Worker's response as JSON */
-        const data = await response.json();
-
-        /*
-         * The Anthropic API response wraps the text in:
-         * data.content[0].text
-         * That text is the JSON string we asked Claude to return.
-         */
+        const data    = await response.json();
         const rawText = data.content[0].text;
 
         /*
-         * Claude sometimes wraps JSON in markdown code blocks like:
-         * ```json { ... } ```
+         * Claude sometimes wraps JSON in markdown code blocks.
          * This regex strips those out so we can parse the raw JSON.
          */
-        const cleaned = rawText.replace(/```json|```/g, '').trim();
+        const cleaned  = rawText.replace(/```json|```/g, '').trim();
         const question = JSON.parse(cleaned);
 
         displayQuestion(question);
 
       } catch (err) {
-        /* If anything goes wrong, show an error in the question area */
         hide('loadingSection');
         show('questionSection');
         document.getElementById('questionText').textContent =
@@ -791,9 +1457,26 @@ Return ONLY a valid JSON object — no explanation, no markdown, no code block. 
       hide('loadingSection');
       show('questionSection');
 
-      /* Update meta line */
-      document.getElementById('questionCount').textContent = 'Question ' + questionNum;
-      document.getElementById('topicLabel').textContent    = selectedTopic;
+      /* Update "Question X of Y" and topic label */
+      document.getElementById('questionCount').textContent =
+        'Question ' + questionNum + ' of ' + maxQuestions;
+      document.getElementById('topicLabel').textContent = selectedTopic;
+
+      /*
+       * Show or hide the PBQ badge depending on question type.
+       * The badge appears next to the question count so students
+       * know they're on a performance-based question.
+       */
+      const pbqBadge = document.getElementById('pbqBadge');
+      if (currentQuestionType === 'pbq') {
+        pbqBadge.classList.remove('hidden');
+      } else {
+        pbqBadge.classList.add('hidden');
+      }
+
+      /* Update the progress bar */
+      const pct = ((questionNum - 1) / maxQuestions) * 100;
+      document.getElementById('progressFill').style.width = pct + '%';
 
       /* Set the question text */
       document.getElementById('questionText').textContent = q.question;
@@ -803,33 +1486,43 @@ Return ONLY a valid JSON object — no explanation, no markdown, no code block. 
       grid.innerHTML = '';
 
       ['A', 'B', 'C', 'D'].forEach(letter => {
-        const btn = document.createElement('button');
-        btn.type      = 'button';
-        btn.className = 'answer-btn';
+        const btn      = document.createElement('button');
+        btn.type       = 'button';
+        btn.className  = 'answer-btn';
 
-        /* Each button shows the letter and the option text */
-        const letterSpan = document.createElement('span');
+        const letterSpan     = document.createElement('span');
         letterSpan.className = 'answer-letter';
         letterSpan.textContent = letter;
-        const optionSpan = document.createElement('span');
-        optionSpan.textContent = q.options[letter];
-        btn.append(letterSpan, optionSpan);
 
-        /* When clicked, call checkAnswer with the letter and the full question */
+        const optionSpan     = document.createElement('span');
+        optionSpan.textContent = q.options[letter];
+
+        btn.append(letterSpan, optionSpan);
         btn.onclick = () => checkAnswer(letter, q);
         grid.appendChild(btn);
       });
 
-      /* Reset feedback and next button */
+      /* Reset feedback and status elements */
       const feedback = document.getElementById('feedback');
-      feedback.className = 'feedback'; /* Remove correct/wrong classes */
-      document.getElementById('nextBtn').classList.remove('visible');
+      feedback.className = 'feedback'; /* Remove correct/wrong classes = hides it */
+
+      const examStatus = document.getElementById('examAnswerStatus');
+      examStatus.className = 'exam-answer-status'; /* Hide exam status line */
+      examStatus.textContent = '';
+
+      /* Hide the next button until an answer is chosen */
+      const nextBtn = document.getElementById('nextBtn');
+      nextBtn.classList.remove('visible', 'btn-finish');
+      nextBtn.className = 'btn-primary btn-next';
+      nextBtn.dataset.retrying = 'false';
+      nextBtn.onclick = nextQuestion;
     }
 
     /*
      * =============================================
      * CHECK ANSWER
      * Called when the student clicks an answer button.
+     * Handles feedback differently for practice vs exam mode.
      * =============================================
      */
     function checkAnswer(chosen, q) {
@@ -838,61 +1531,202 @@ Return ONLY a valid JSON object — no explanation, no markdown, no code block. 
       /* Update score */
       scoreTotal++;
       if (isCorrect) scoreCorrect++;
-      document.getElementById('scoreCorrect').textContent = scoreCorrect;
-      document.getElementById('scoreTotal').textContent   = scoreTotal;
+      updateScoreDisplay();
 
-      /* Disable all answer buttons so the student can't change their answer */
-      const buttons = document.querySelectorAll('.answer-btn');
-      buttons.forEach((btn, index) => {
+      /* Disable all answer buttons and highlight correct/wrong */
+      document.querySelectorAll('.answer-btn').forEach((btn, index) => {
         btn.disabled = true;
         const letter = ['A', 'B', 'C', 'D'][index];
         if (letter === q.correct) {
-          btn.classList.add('correct'); /* Highlight the correct answer green */
+          btn.classList.add('correct');
         } else if (letter === chosen && !isCorrect) {
-          btn.classList.add('wrong');   /* Highlight the student's wrong choice red */
+          btn.classList.add('wrong');
         }
       });
 
-      /* Show the feedback explanation */
-      const feedback = document.getElementById('feedback');
-      feedback.className = 'feedback ' + (isCorrect ? 'correct' : 'wrong');
-      document.getElementById('feedbackLabel').textContent = isCorrect ? 'Correct!' : 'Incorrect';
-      document.getElementById('feedbackText').textContent  = q.explanation;
+      /* --- Feedback varies by mode --- */
+      if (!isExamMode) {
+        /*
+         * PRACTICE MODE: show the full explanation.
+         * This helps students learn, not just test themselves.
+         */
+        const feedback = document.getElementById('feedback');
+        feedback.className = 'feedback ' + (isCorrect ? 'correct' : 'wrong');
+        document.getElementById('feedbackLabel').textContent =
+          isCorrect ? 'Correct!' : 'Incorrect';
+        document.getElementById('feedbackText').textContent = q.explanation;
 
-      /*
-       * If the student got it wrong, change the button to "Try Again"
-       * so they get another question on the same topic.
-       * If correct, show the normal "Next Question" button.
-       *
-       * We store whether the last answer was correct on the button itself
-       * using a data attribute, so nextQuestion() knows what to do.
-       */
-      const nextBtn = document.getElementById('nextBtn');
-      if (isCorrect) {
-        nextBtn.textContent          = 'Next Question';
-        nextBtn.dataset.retrying     = 'false';
       } else {
-        nextBtn.textContent          = 'Try Again on this Topic';
-        nextBtn.dataset.retrying     = 'true';
+        /*
+         * EXAM MODE: just show a one-line correct/wrong status.
+         * No explanation — the real exam doesn't give them away either.
+         */
+        const examStatus = document.getElementById('examAnswerStatus');
+        examStatus.className  = 'exam-answer-status ' + (isCorrect ? 'correct' : 'wrong');
+        examStatus.textContent = isCorrect
+          ? 'Correct — move on.'
+          : 'Incorrect — the correct answer is highlighted above.';
       }
+
+      /* --- Determine what the next button should say --- */
+      const nextBtn = document.getElementById('nextBtn');
+
+      if (scoreTotal >= maxQuestions) {
+        /*
+         * Last question answered — show "See Results" instead of "Next Question".
+         * We use a green button to signal completion.
+         */
+        nextBtn.textContent      = 'See Results';
+        nextBtn.className        = 'btn-primary btn-next btn-finish';
+        nextBtn.dataset.retrying = 'false';
+        nextBtn.onclick          = () => showResults(false);
+
+      } else if (!isExamMode && !isCorrect) {
+        /*
+         * Practice mode, wrong answer — offer to try again on the same topic.
+         * This fetches a new question (not the same one), so questionNum still goes up.
+         */
+        nextBtn.textContent      = 'Try Again on this Topic';
+        nextBtn.dataset.retrying = 'true';
+        nextBtn.onclick          = nextQuestion;
+
+      } else {
+        /* Correct answer, or exam mode — standard Next Question button */
+        nextBtn.textContent      = 'Next Question';
+        nextBtn.dataset.retrying = 'false';
+        nextBtn.onclick          = nextQuestion;
+      }
+
       nextBtn.classList.add('visible');
     }
 
     /*
-     * =============================================
-     * NEXT QUESTION
-     * If the student got the last answer wrong (retrying = true),
-     * fetch a new question on the same topic.
-     * If correct, fetch the next question as normal.
-     * Either way, fetchQuestion() handles it — the topic never changes
-     * until the student answers correctly.
-     * =============================================
+     * Fetch the next question. The topic stays the same (practice) or
+     * gets randomised (exam). Both paths go through fetchQuestion().
      */
     function nextQuestion() {
       fetchQuestion();
     }
 
-    /* ---- Utility helpers ---- */
+    /*
+     * =============================================
+     * SHOW RESULTS
+     * Called when all questions are answered or time runs out.
+     * Renders the results card with score, pass/fail, and time taken.
+     * =============================================
+     */
+    function showResults(timesUp) {
+      /* Stop the timer if it's running */
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+
+      hide('questionSection');
+      hide('loadingSection');
+      hide('timerDisplay');
+      show('resultsSection');
+
+      /* Calculate score */
+      const answered = scoreTotal;                              /* questions actually answered */
+      const pct      = answered > 0
+        ? Math.round((scoreCorrect / answered) * 100)
+        : 0;
+      const passed   = pct >= 80;
+
+      /* Time taken */
+      const elapsedSec = Math.floor((Date.now() - examStartTime) / 1000);
+      const elapsedMin = Math.floor(elapsedSec / 60);
+      const elapsedS   = elapsedSec % 60;
+      document.getElementById('resultsTime').textContent =
+        elapsedMin + 'm ' + String(elapsedS).padStart(2, '0') + 's';
+
+      /* Times-up notice */
+      if (timesUp) {
+        show('timesUpNotice');
+      } else {
+        hide('timesUpNotice');
+      }
+
+      /* Icon and heading */
+      if (isExamMode) {
+        document.getElementById('resultsIcon').textContent    = passed ? '🎉' : '📚';
+        document.getElementById('resultsHeading').textContent = passed ? 'Exam Passed!' : 'Exam Failed';
+        document.getElementById('resultsSub').textContent     = passed
+          ? 'Great work — you hit the 80% pass mark.'
+          : 'You need 80% to pass. Keep studying and try again!';
+      } else {
+        document.getElementById('resultsIcon').textContent    = '✅';
+        document.getElementById('resultsHeading').textContent = 'Practice Complete!';
+        document.getElementById('resultsSub').textContent     =
+          'Here is how you did on today\'s practice session.';
+      }
+
+      /* Score percentage */
+      document.getElementById('resultsPercent').textContent  = pct + '%';
+      document.getElementById('resultsFraction').textContent =
+        scoreCorrect + ' correct out of ' + answered + ' questions';
+
+      document.getElementById('resultsCorrectStat').textContent =
+        scoreCorrect + ' / ' + answered;
+
+      /* Pass/Fail badge — only in exam mode */
+      const badge = document.getElementById('resultsPassFail');
+      const passMarkStat = document.getElementById('passMarkStat');
+
+      if (isExamMode) {
+        badge.textContent = passed ? 'PASS' : 'FAIL';
+        badge.className   = 'result-badge ' + (passed ? 'pass' : 'fail');
+        badge.classList.remove('hidden');
+        passMarkStat.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+        passMarkStat.classList.add('hidden');
+      }
+    }
+
+    /*
+     * =============================================
+     * RESTART QUIZ
+     * Resets everything and takes the student back to the topic selector.
+     * =============================================
+     */
+    function restartQuiz() {
+      /* Stop any running timer */
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+
+      /* Reset state */
+      questionNum         = 0;
+      scoreCorrect        = 0;
+      scoreTotal          = 0;
+      selectedTopic       = null;
+      examQuestionQueue   = [];
+      currentQuestionType = 'mcq';
+      updateScoreDisplay();
+
+      /* Reset topic selector UI */
+      document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('selected'));
+
+      /* Reset mode to practice */
+      isExamMode   = false;
+      maxQuestions = 20;
+      selectMode('practice');   /* This resets the mode buttons and start button state */
+
+      hide('resultsSection');
+      hide('timerDisplay');
+      show('topicSection');
+    }
+
+    /* ---- Utility: update the score pill in the banner ---- */
+    function updateScoreDisplay() {
+      document.getElementById('scoreCorrect').textContent = scoreCorrect;
+      document.getElementById('scoreTotal').textContent   = scoreTotal;
+    }
+
+    /* ---- Utility: show/hide elements ---- */
     function show(id) { document.getElementById(id).classList.remove('hidden'); }
     function hide(id) { document.getElementById(id).classList.add('hidden');    }
 
