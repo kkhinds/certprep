@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(grep -n \"innerHTML.*\\\\`\\\\|innerHTML.*$\" /e/GitHJub/certprep/quiz.html /e/GitHJub/certprep/pbq.html)"
+      "Bash(grep -n \"innerHTML.*\\\\`\\\\|innerHTML.*$\" /e/GitHJub/certprep/quiz.html /e/GitHJub/certprep/pbq.html)",
+      "WebSearch",
+      "WebFetch(domain:www.stationx.net)",
+      "WebFetch(domain:dojolab.org)",
+      "WebFetch(domain:easy-prep.org)",
+      "WebFetch(domain:wyzguyscybersecurity.com)"
     ]
   }
 }

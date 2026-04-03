@@ -407,9 +407,27 @@
     }
 
     /* =============================================
-       PBQ BADGE
-       Appears next to the question count on performance-based questions.
+       PBQ BANNER & BADGE
+       The banner is a full-width coloured bar shown at the top
+       of the question card on performance-based questions.
+       The badge is the small inline label next to the question count.
     ============================================= */
+    .pbq-banner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(245,158,11,0.12);
+      border: 1px solid rgba(245,158,11,0.4);
+      border-radius: var(--radius-button);
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fbbf24;
+      margin-bottom: 20px;
+    }
+
+    .pbq-banner-icon { font-size: 1.1rem; }
+
     .pbq-badge {
       display: inline-block;
       font-size: 0.7rem;
@@ -592,16 +610,6 @@
       font-size: 0.95rem;
     }
 
-    /* Exam mode: show a minimal status line instead of explanation */
-    .exam-answer-status {
-      margin-top: 16px;
-      font-size: 0.88rem;
-      font-weight: 700;
-      display: none;
-    }
-    .exam-answer-status.correct { color: var(--color-success); display: block; }
-    .exam-answer-status.wrong   { color: var(--color-error);   display: block; }
-
     /* =============================================
        NEXT QUESTION BUTTON
        Appears after the student answers.
@@ -739,6 +747,159 @@
     }
 
     /* =============================================
+       PBQ INTERACTIVE SECTION
+       Used for the first 5 questions in exam mode.
+       Mirrors the matching and ordering UIs from pbq.html.
+    ============================================= */
+
+    /* Type label above the scenario box */
+    .pbq-type-label {
+      display: inline-block;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; padding: 3px 9px;
+      border-radius: var(--radius-badge); margin-bottom: 14px;
+    }
+    .type-matching { background: rgba(59,130,246,0.15); color: #3b82f6; }
+    .type-ordering { background: rgba(139,92,246,0.15); color: #8b5cf6; }
+
+    /* Shaded scenario block — sets the real-world context */
+    .scenario-box {
+      background-color: rgba(59,130,246,0.06);
+      border-left: 3px solid var(--color-primary);
+      border-radius: 0 var(--radius-button) var(--radius-button) 0;
+      padding: 14px 18px;
+      margin-bottom: 22px;
+      font-size: 0.92rem;
+      line-height: 1.65;
+    }
+    .scenario-label {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--color-primary); margin-bottom: 6px;
+    }
+
+    /* Instruction line ("Match each item…" / "Place steps in order…") */
+    .pbq-instruction {
+      font-size: 0.95rem; font-weight: 700;
+      margin-bottom: 20px; line-height: 1.5;
+    }
+
+    /* ---- MATCHING UI ---- */
+    .match-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 500px) { .match-container { grid-template-columns: 1fr; } }
+
+    .match-column-label {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em;
+      text-transform: uppercase; color: var(--color-text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .match-item {
+      background-color: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-button);
+      padding: 11px 14px;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: border-color 0.15s, background-color 0.15s;
+      margin-bottom: 8px;
+      min-height: 44px;
+      display: flex; align-items: center;
+      user-select: none;
+    }
+    .match-item:hover:not(.used):not(.disabled) { border-color: var(--color-primary); }
+    .match-item.selected {
+      border-color: var(--color-primary);
+      background-color: rgba(59,130,246,0.15);
+      color: var(--color-text-primary);
+    }
+    .match-item.matched { cursor: default; }
+    .match-item.matched:not([class*="pair-"]) {
+      border-color: var(--color-success);
+      background-color: var(--color-success-bg);
+      color: #bbf7d0;
+    }
+    .match-item.wrong {
+      border-color: var(--color-error);
+      background-color: var(--color-error-bg);
+      color: #fecaca;
+    }
+    .match-item.disabled:not(.matched) { cursor: default; opacity: 0.6; }
+    .match-item.matched.disabled { cursor: default; }
+
+    /* Per-pair colors — each matched pair gets a distinct color */
+    .match-item.pair-0 { border-color:#3b82f6 !important; background-color:rgba(59,130,246,0.15) !important; color:#93c5fd !important; }
+    .match-item.pair-1 { border-color:#8b5cf6 !important; background-color:rgba(139,92,246,0.15) !important; color:#c4b5fd !important; }
+    .match-item.pair-2 { border-color:#f59e0b !important; background-color:rgba(245,158,11,0.15) !important; color:#fcd34d !important; }
+    .match-item.pair-3 { border-color:#10b981 !important; background-color:rgba(16,185,129,0.15) !important; color:#6ee7b7 !important; }
+
+    /* Completed pairs summary display */
+    .match-pairs-display { margin-bottom: 16px; }
+    .match-pair-row {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 8px; font-size: 0.88rem;
+    }
+    .match-pair-row.pair-0 .match-pair-left,
+    .match-pair-row.pair-0 .match-pair-right,
+    .match-pair-row.pair-0 .match-pair-arrow { color: #93c5fd !important; }
+    .match-pair-row.pair-1 .match-pair-left,
+    .match-pair-row.pair-1 .match-pair-right,
+    .match-pair-row.pair-1 .match-pair-arrow { color: #c4b5fd !important; }
+    .match-pair-row.pair-2 .match-pair-left,
+    .match-pair-row.pair-2 .match-pair-right,
+    .match-pair-row.pair-2 .match-pair-arrow { color: #fcd34d !important; }
+    .match-pair-row.pair-3 .match-pair-left,
+    .match-pair-row.pair-3 .match-pair-right,
+    .match-pair-row.pair-3 .match-pair-arrow { color: #6ee7b7 !important; }
+    .match-pair-left  { flex: 1; text-align: right; color: var(--color-text-secondary); }
+    .match-pair-arrow { color: var(--color-border); flex-shrink: 0; }
+    .match-pair-right { flex: 1; color: var(--color-text-primary); font-weight: 700; }
+
+    /* ---- ORDERING UI ---- */
+    .order-list { list-style: none; margin-bottom: 20px; }
+    .order-item {
+      display: flex; align-items: center; gap: 12px;
+      background-color: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-button);
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      transition: border-color 0.15s;
+    }
+    .order-item.correct { border-color: var(--color-success); background-color: var(--color-success-bg); }
+    .order-item.wrong   { border-color: var(--color-error);   background-color: var(--color-error-bg); }
+    .order-num  { font-size: 0.8rem; font-weight: 700; color: var(--color-text-secondary); min-width: 20px; text-align: center; }
+    .order-text { flex: 1; line-height: 1.4; }
+    .order-controls { display: flex; flex-direction: column; gap: 3px; flex-shrink: 0; }
+    .order-btn {
+      background: var(--color-surface); border: 1px solid var(--color-border);
+      border-radius: 4px; color: var(--color-text-secondary);
+      font-size: 0.7rem; width: 26px; height: 22px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .order-btn:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
+    .order-btn:disabled { opacity: 0.3; cursor: default; }
+
+    /* Undo button */
+    .btn-undo {
+      display: block; width: 100%; padding: 10px 16px;
+      background-color: transparent;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-button);
+      color: var(--color-text-secondary);
+      font-family: var(--font-base); font-size: 0.88rem;
+      cursor: pointer; margin-top: 10px;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn-undo:hover { border-color: var(--color-error); color: #fca5a5; }
+
+    /* =============================================
        HIDDEN UTILITY CLASS
     ============================================= */
     .hidden { display: none !important; }
@@ -858,11 +1019,16 @@
     -->
     <div id="questionSection" class="card hidden">
 
+      <!-- PBQ banner — only shown on performance-based questions -->
+      <div id="pbqBanner" class="pbq-banner hidden">
+        <span class="pbq-banner-icon">&#9881;</span>
+        Performance-Based Question — Read the full scenario carefully before answering.
+      </div>
+
       <!-- "Question 7 of 20" + PBQ badge (if applicable) + current topic -->
       <div class="question-meta">
         <span>
           <span id="questionCount">Question 1 of 20</span>
-          <!-- PBQ badge — only shown on performance-based questions -->
           <span id="pbqBadge" class="pbq-badge hidden">Performance-Based</span>
         </span>
         <span id="topicLabel"></span>
@@ -884,12 +1050,70 @@
         <p id="feedbackText"></p>
       </div>
 
-      <!-- Exam mode: minimal correct/wrong status, no explanation -->
-      <p id="examAnswerStatus" class="exam-answer-status"></p>
-
-      <!-- Next / Try Again / See Results button -->
+      <!-- Next / Try Again / See Results button (practice mode only) -->
       <button id="nextBtn" class="btn-primary btn-next" onclick="nextQuestion()">
         Next Question
+      </button>
+    </div>
+
+    <!--
+      PBQ SECTION
+      Shown for the first 5 questions in exam mode.
+      Uses interactive matching (click-to-pair) and ordering (up/down arrows)
+      UIs that mirror the real CompTIA exam simulation format.
+    -->
+    <div id="pbqSection" class="card hidden">
+      <div class="question-meta">
+        <span id="pbqQuestionCount">Question 1 of 90</span>
+        <span id="pbqTopicLabel"></span>
+      </div>
+
+      <!-- Progress bar (same style as the MCQ section) -->
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="pbqProgressFill" style="width: 0%"></div>
+      </div>
+
+      <!-- MATCHING or ORDERING label -->
+      <span id="pbqTypeLabel" class="pbq-type-label"></span>
+
+      <!-- Scenario box — the real-world situation the student must solve -->
+      <div class="scenario-box">
+        <p class="scenario-label">Scenario</p>
+        <p id="pbqScenarioText"></p>
+      </div>
+
+      <!-- Instruction ("Match each item…" / "Place the steps in order…") -->
+      <p id="pbqInstructionText" class="pbq-instruction"></p>
+
+      <!-- ── MATCHING UI ───────────────────────────────── -->
+      <div id="matchingSection" class="hidden">
+        <div class="match-container">
+          <div>
+            <p class="match-column-label">Items</p>
+            <div id="matchLeft"></div>
+          </div>
+          <div>
+            <p class="match-column-label">Answers</p>
+            <div id="matchRight"></div>
+          </div>
+        </div>
+        <!-- Shows completed pairs as the student makes them -->
+        <div id="matchPairsDisplay" class="match-pairs-display hidden"></div>
+        <!-- Undo the most recent pair -->
+        <button id="undoBtn" class="btn-undo hidden" onclick="undoLastPair()">
+          &#8592; Undo Last Match
+        </button>
+      </div>
+
+      <!-- ── ORDERING UI ───────────────────────────────── -->
+      <div id="orderingSection" class="hidden">
+        <ol id="orderList" class="order-list"></ol>
+      </div>
+
+      <!-- Submit button (disabled until all pairs are made) -->
+      <button id="pbqSubmitBtn" class="btn-primary" style="margin-top:20px"
+              onclick="submitPBQAnswer()">
+        Submit Answer
       </button>
     </div>
 
@@ -1068,6 +1292,14 @@
      */
     let examQuestionQueue   = [];
     let currentQuestionType = 'mcq'; // set per question when pulling from the queue
+
+    /* PBQ interaction state (matching + ordering) */
+    let currentPBQ    = null;   // The parsed PBQ object currently on screen
+    let selectedLeft  = null;   // Matching: the left item the student clicked first
+    let pbqPairs      = {};     // Matching: completed pairs { leftItem: rightItem }
+    let pbqPairColors = {};     // Matching: color index assigned to each left item
+    let pbqPairCount  = 0;      // Matching: increments per pair to cycle colors
+    let pbqPairStack  = [];     // Matching: ordered history for undo
 
     /* Timer state */
     let timerInterval = null;   // holds the setInterval reference so we can cancel it
@@ -1359,21 +1591,21 @@
         selectedTopic        = slot.topic;
         currentQuestionType  = slot.type;
 
-        /* Update loading text to tell the student what's coming */
         if (currentQuestionType === 'pbq') {
           document.getElementById('loadingText').textContent =
-            'Loading performance-based question ' + questionNum + ' of 5...';
+            'Building performance-based question ' + questionNum + ' of 5...';
         } else {
           document.getElementById('loadingText').textContent =
             'Loading question ' + questionNum + ' of 90...';
         }
       } else {
-        currentQuestionType = 'mcq'; /* Practice mode is always MCQ */
+        currentQuestionType = 'mcq';
       }
 
-      /* Show the loading spinner, hide the question card */
+      /* Show loading spinner, hide all content sections */
       show('loadingSection');
       hide('questionSection');
+      hide('pbqSection');
 
       /*
        * Choose the right prompt based on question type.
@@ -1384,24 +1616,193 @@
        *      scenario, practical decision-making required).
        */
       let prompt;
+      let isPBQ = (currentQuestionType === 'pbq');
 
-      if (currentQuestionType === 'pbq') {
-        prompt = `You are a CompTIA exam question writer creating a Performance-Based Question (PBQ) for the ${currentExam.title} exam, domain: "${selectedTopic}".
+      if (isPBQ) {
+        /*
+         * PBQ questions use the matching/ordering interactive UI from pbq.html.
+         * Alternate: odd question numbers = matching, even = ordering.
+         * The prompt returns a different JSON schema from MCQs — see buildPBQPrompt().
+         *
+         * Real CompTIA A+ PBQs are drag-and-drop / simulation tasks.
+         * We simulate them as MCQ questions using one of six authentic
+         * PBQ formats found on the real exam:
+         *
+         *  0 — STEP ORDERING     (drag troubleshooting steps into correct order)
+         *  1 — CABLE PINOUT      (T568A/B wire colour sequence)
+         *  2 — COMPONENT DIAGNOSIS (printer: smearing = fuser, jamming = rollers)
+         *  3 — DEVICE CONFIGURATION (WAP: MAC filter, SSID, channel, encryption)
+         *  4 — OUTPUT READING    (interpret ipconfig / log / packet capture)
+         *  5 — CABLE/TOOL MATCHING (match cable type → connector → correct use case)
+         *
+         * Each type maps directly to a real PBQ simulation on the CompTIA exam.
+         */
+        const pbqTemplates = [
 
-PBQs present a realistic workplace scenario and test hands-on, practical knowledge. The scenario should be 2-4 sentences describing a specific situation a technician or IT professional would face. End with a clear question asking what the best course of action is.
+          /* ── 0: STEP ORDERING ─────────────────────────────────────────────
+             Mirrors: "Drag the steps of the troubleshooting model into the
+             correct order."
+             The question lists the steps numbered but scrambled.
+             Each answer option is a different ordering sequence (e.g. 2→4→1→3→5→6).
+          ─────────────────────────────────────────────────────────────────── */
+          `Generate a STEP-ORDERING question for the ${currentExam.title} exam, domain: "${selectedTopic}".
 
-Return ONLY a valid JSON object — no explanation, no markdown, no code block:
-{
-  "question": "Full scenario description here. End with the specific question to answer.",
-  "options": {
-    "A": "First option",
-    "B": "Second option",
-    "C": "Third option",
-    "D": "Fourth option"
-  },
-  "correct": "A",
-  "explanation": "A clear explanation of why the correct answer is right and why the others are wrong. Written for a beginner student."
-}`;
+This mirrors the real CompTIA PBQ: "Drag the steps into the correct order."
+
+Write a scenario where a technician must follow a specific sequence of steps. Number the steps 1–6 (or 1–4 for shorter processes) but present them OUT OF ORDER in the question. Each answer option must be a different sequence written as numbers separated by arrows, like "2 → 4 → 1 → 3 → 5 → 6". Only one sequence is correct.
+
+Example format:
+Question: "A technician is troubleshooting a PC that randomly shuts down. The following steps have been identified but are listed out of order: 1) Run a temperature monitoring tool, 2) Document the solution, 3) Question the user about recent changes, 4) Clean the cooling vents and reapply thermal paste, 5) Reboot and verify stability, 6) Establish a theory that overheating is the cause. Which sequence follows CompTIA's six-step troubleshooting methodology?"
+Options: A) 3 → 6 → 1 → 4 → 5 → 2   B) 1 → 3 → 6 → 4 → 2 → 5   C) 6 → 3 → 1 → 4 → 5 → 2   D) 3 → 1 → 6 → 5 → 4 → 2
+
+Now generate a NEW, DIFFERENT question using this exact format for domain: "${selectedTopic}".`,
+
+          /* ── 1: CABLE PINOUT / WIRING ──────────────────────────────────────
+             Mirrors: "Reorder the wires by dragging them into the EIA/TIA 568
+             arrangement specified so that communication through the crossover
+             cable can occur."
+             Ask about T568A or T568B pin 1–8 wire colour sequence, or
+             crossover cable differences.
+          ─────────────────────────────────────────────────────────────────── */
+          `Generate a CABLE PINOUT question for the ${currentExam.title} exam, domain: "${selectedTopic}".
+
+This mirrors the real CompTIA PBQ: "Reorder the wires into the T568A/B arrangement."
+
+Ask about the correct EIA/TIA 568A or 568B wire colour sequence for pins 1–8, OR ask which pins differ between a T568A and T568B end on a crossover cable, OR ask which pair is on which pins. The question must name specific wire colours (White/Orange, Orange, White/Green, Blue, White/Blue, Green, White/Brown, Brown for T568B).
+
+Example format:
+Question: "A technician is terminating a Cat 5e patch cable to the T568B standard. Reading left to right with the tab facing down, what is the correct wire color sequence for pins 1 through 8?"
+Options:
+A) White/Orange, Orange, White/Green, Blue, White/Blue, Green, White/Brown, Brown
+B) White/Green, Green, White/Orange, Blue, White/Blue, Orange, White/Brown, Brown
+C) White/Orange, Orange, White/Green, White/Blue, Blue, Green, White/Brown, Brown
+D) Orange, White/Orange, Green, White/Green, Blue, White/Blue, Brown, White/Brown
+
+Generate a NEW, DIFFERENT wiring question related to domain: "${selectedTopic}".`,
+
+          /* ── 2: COMPONENT DIAGNOSIS ────────────────────────────────────────
+             Mirrors: Printer troubleshooting PBQ where you drag components
+             (fuser, pickup rollers, toner, imaging drum) to fix described faults.
+             Smearing when touched = fuser. Jamming = pickup rollers.
+             Faded prints = toner. Ghost images = imaging drum.
+          ─────────────────────────────────────────────────────────────────── */
+          `Generate a COMPONENT DIAGNOSIS question for the ${currentExam.title} exam, domain: "${selectedTopic}".
+
+This mirrors the real CompTIA PBQ: "A laser printer is malfunctioning — drag the correct replacement parts."
+
+Describe 2–3 specific, distinct symptoms a device is showing. Each symptom points to a specific component. Ask which combination of components the technician should replace to resolve ALL the described symptoms. Wrong options share one correct component but pair it with an incorrect one.
+
+Use this symptom-to-component mapping for printers:
+- Pages smear when touched → fuser assembly (heat not fusing toner)
+- Paper jams on a specific paper size → pickup rollers
+- Faded or light prints → toner cartridge low / needs replacement
+- Ghost/shadow images on page → imaging drum
+- Vertical black lines on every page → dirty/scratched imaging drum or transfer roller
+
+Example format:
+Question: "A laser printer in an office produces pages where the toner smears when users touch the printed text. Additionally, every print job on legal-size paper jams before exiting the output tray. Which TWO components should the technician replace to resolve both issues?"
+Options:
+A) Fuser assembly and pickup rollers
+B) Toner cartridge and paper tray
+C) Imaging drum and fuser assembly
+D) Pickup rollers and toner cartridge
+
+Generate a NEW, DIFFERENT component diagnosis question for domain: "${selectedTopic}". It does NOT have to be about a printer — apply the same approach to any hardware relevant to this domain.`,
+
+          /* ── 3: DEVICE CONFIGURATION ───────────────────────────────────────
+             Mirrors: Wireless AP configuration PBQ — set MAC filtering, SSID,
+             channel, passphrase, admin password to meet listed requirements.
+             OR: RAID setup, IP addressing, BIOS settings, VPN config.
+          ─────────────────────────────────────────────────────────────────── */
+          `Generate a DEVICE CONFIGURATION question for the ${currentExam.title} exam, domain: "${selectedTopic}".
+
+This mirrors the real CompTIA PBQ where you configure a device (WAP, RAID, IP, BIOS) to meet specific listed requirements.
+
+List 3–4 specific configuration requirements as bullet points or a numbered list. Then ask which single setting or combination of settings achieves one specific requirement from the list. Wrong options use plausible but incorrect settings.
+
+Example format:
+Question: "A technician is setting up a wireless access point for a medical office. The requirements are:
+• Only devices with pre-registered hardware addresses may connect
+• The network name must not appear in wireless scans
+• All traffic must use WPA3-Enterprise encryption
+• The 5 GHz band must be used exclusively
+
+A visitor's laptop cannot see the office network in their available Wi-Fi list. Which configuration is responsible for this?"
+Options:
+A) SSID broadcast is disabled
+B) MAC address filtering is enabled
+C) WPA3-Enterprise is enforced
+D) The AP is set to 5 GHz only
+
+Generate a NEW, DIFFERENT configuration question for domain: "${selectedTopic}".`,
+
+          /* ── 4: OUTPUT / LOG READING ───────────────────────────────────────
+             Mirrors: "Use the packet capture output to complete the information"
+             and "Review the log for the server."
+             Show a realistic snippet of command output, event log, or packet
+             data as a preformatted block. Ask what it means or what to do next.
+          ─────────────────────────────────────────────────────────────────── */
+          `Generate an OUTPUT READING question for the ${currentExam.title} exam, domain: "${selectedTopic}".
+
+This mirrors the real CompTIA PBQ: "Use the command output / packet capture / server log to answer the question."
+
+Include a realistic, plausible snippet of command output, event log entry, or network capture inside the question text. Format it as a preformatted block using plain text (no markdown). Then ask the student to interpret a specific value in the output or identify the correct next action.
+
+Use outputs from real tools: ipconfig /all, ping, tracert, netstat -an, nslookup, Device Manager error codes, Windows Event Viewer entries, or DHCP lease tables.
+
+Example format:
+Question: "A technician runs ipconfig /all on a Windows 11 workstation and sees the following output:
+
+   Ethernet adapter Local Area Connection:
+      IPv4 Address . . . . . : 169.254.43.12
+      Subnet Mask  . . . . . : 255.255.0.0
+      Default Gateway  . . . :
+
+The user reports they cannot reach the company intranet or the internet. What does the IP address 169.254.43.12 indicate, and what should the technician do FIRST?"
+Options:
+A) The workstation received an APIPA address because it could not contact a DHCP server — run ipconfig /release followed by ipconfig /renew
+B) The workstation has a static IP conflict — assign a new static IP in the 192.168.1.x range
+C) The DNS server is unreachable — run ipconfig /flushdns and restart the DNS Client service
+D) The default gateway is misconfigured — manually enter the gateway IP in Network Adapter settings
+
+Generate a NEW, DIFFERENT output reading question for domain: "${selectedTopic}". Use a different command or log type.`,
+
+          /* ── 5: CABLE / TOOL MATCHING ──────────────────────────────────────
+             Mirrors: "Match cables (Cat 3 UTP, coaxial, Cat 5e UTP) with their
+             connectors and tools" and "Connect network devices using the
+             appropriate cables."
+             Describe a cable by its physical appearance or spec, then ask
+             which connector, tool, or use case matches it.
+          ─────────────────────────────────────────────────────────────────── */
+          `Generate a CABLE AND CONNECTOR MATCHING question for the ${currentExam.title} exam, domain: "${selectedTopic}".
+
+This mirrors the real CompTIA PBQ: "Match each cable type with the correct connector and tool."
+
+Describe cables or connectors by their PHYSICAL characteristics (pin count, shape, rows, locking tab, shielding) and/or performance specs (max speed, max distance, frequency). Ask the student to match the description to the correct cable type, connector name, or appropriate tool to terminate it.
+
+Physical descriptions to use:
+- RJ-45: 8-pin modular connector, used with Cat 5e/6/6a, terminated with a crimping tool
+- RJ-11: 6-pin (4 used) modular connector, used for telephone/DSL
+- VGA: trapezoidal 15-pin D-sub connector, three rows of 5 pins
+- BNC: bayonet-style twist-lock connector, used with coaxial cable (RG-58)
+- F-connector: threaded coaxial connector, used with RG-6 for cable TV/satellite
+- LC/SC/ST: fibre optic connectors (LC = small square, SC = push-pull square, ST = bayonet round)
+
+Example format:
+Question: "A technician finds an unlabelled cable with a trapezoidal 15-pin D-sub connector arranged in three rows of five pins. The cable is connected to a legacy CRT monitor. Which cable type is this, and which tool would be used if the technician needed to terminate a new run of the same network cable type used in the same era of networking?"
+Options:
+A) VGA cable; no field termination tool needed — VGA uses a screw-lock connector
+B) DVI-I cable; terminated with a crimping tool
+C) DisplayPort cable; uses a locking clip and no termination tool
+D) BNC cable; terminated with a coaxial compression tool
+
+Generate a NEW, DIFFERENT cable/connector matching question for domain: "${selectedTopic}".`
+
+        ];
+
+        /* Odd PBQs = matching, even PBQs = ordering */
+        const pbqType = (questionNum % 2 === 1) ? 'matching' : 'ordering';
+        prompt = buildPBQPrompt(pbqType);
       } else {
         prompt = `You are a CompTIA exam question writer. Generate one multiple choice question for the ${currentExam.title} exam about the topic: "${selectedTopic}".
 
@@ -1434,9 +1835,14 @@ Return ONLY a valid JSON object — no explanation, no markdown, no code block. 
          * This regex strips those out so we can parse the raw JSON.
          */
         const cleaned  = rawText.replace(/```json|```/g, '').trim();
-        const question = JSON.parse(cleaned);
+        const parsed   = JSON.parse(cleaned);
 
-        displayQuestion(question);
+        /* Route to the correct display function based on question type */
+        if (isPBQ) {
+          displayPBQ(parsed);
+        } else {
+          displayQuestion(parsed);
+        }
 
       } catch (err) {
         hide('loadingSection');
@@ -1467,11 +1873,14 @@ Return ONLY a valid JSON object — no explanation, no markdown, no code block. 
        * The badge appears next to the question count so students
        * know they're on a performance-based question.
        */
-      const pbqBadge = document.getElementById('pbqBadge');
+      const pbqBadge   = document.getElementById('pbqBadge');
+      const pbqBanner  = document.getElementById('pbqBanner');
       if (currentQuestionType === 'pbq') {
         pbqBadge.classList.remove('hidden');
+        pbqBanner.classList.remove('hidden');
       } else {
         pbqBadge.classList.add('hidden');
+        pbqBanner.classList.add('hidden');
       }
 
       /* Update the progress bar */
@@ -1502,13 +1911,9 @@ Return ONLY a valid JSON object — no explanation, no markdown, no code block. 
         grid.appendChild(btn);
       });
 
-      /* Reset feedback and status elements */
+      /* Reset feedback (practice mode) */
       const feedback = document.getElementById('feedback');
       feedback.className = 'feedback'; /* Remove correct/wrong classes = hides it */
-
-      const examStatus = document.getElementById('examAnswerStatus');
-      examStatus.className = 'exam-answer-status'; /* Hide exam status line */
-      examStatus.textContent = '';
 
       /* Hide the next button until an answer is chosen */
       const nextBtn = document.getElementById('nextBtn');
@@ -1533,7 +1938,24 @@ Return ONLY a valid JSON object — no explanation, no markdown, no code block. 
       if (isCorrect) scoreCorrect++;
       updateScoreDisplay();
 
-      /* Disable all answer buttons and highlight correct/wrong */
+      if (isExamMode) {
+        /*
+         * EXAM MODE: record the answer silently and move on immediately.
+         * No highlighting, no feedback, no button — just like the real exam.
+         * The score is tracked internally and revealed at the end.
+         */
+        if (scoreTotal >= maxQuestions) {
+          showResults(false);
+        } else {
+          fetchQuestion();
+        }
+        return; /* Skip all the practice-mode UI below */
+      }
+
+      /*
+       * PRACTICE MODE: disable buttons, highlight correct/wrong,
+       * show the explanation, and display a Next / Try Again button.
+       */
       document.querySelectorAll('.answer-btn').forEach((btn, index) => {
         btn.disabled = true;
         const letter = ['A', 'B', 'C', 'D'][index];
@@ -1544,54 +1966,26 @@ Return ONLY a valid JSON object — no explanation, no markdown, no code block. 
         }
       });
 
-      /* --- Feedback varies by mode --- */
-      if (!isExamMode) {
-        /*
-         * PRACTICE MODE: show the full explanation.
-         * This helps students learn, not just test themselves.
-         */
-        const feedback = document.getElementById('feedback');
-        feedback.className = 'feedback ' + (isCorrect ? 'correct' : 'wrong');
-        document.getElementById('feedbackLabel').textContent =
-          isCorrect ? 'Correct!' : 'Incorrect';
-        document.getElementById('feedbackText').textContent = q.explanation;
+      const feedback = document.getElementById('feedback');
+      feedback.className = 'feedback ' + (isCorrect ? 'correct' : 'wrong');
+      document.getElementById('feedbackLabel').textContent =
+        isCorrect ? 'Correct!' : 'Incorrect';
+      document.getElementById('feedbackText').textContent = q.explanation;
 
-      } else {
-        /*
-         * EXAM MODE: just show a one-line correct/wrong status.
-         * No explanation — the real exam doesn't give them away either.
-         */
-        const examStatus = document.getElementById('examAnswerStatus');
-        examStatus.className  = 'exam-answer-status ' + (isCorrect ? 'correct' : 'wrong');
-        examStatus.textContent = isCorrect
-          ? 'Correct — move on.'
-          : 'Incorrect — the correct answer is highlighted above.';
-      }
-
-      /* --- Determine what the next button should say --- */
       const nextBtn = document.getElementById('nextBtn');
 
       if (scoreTotal >= maxQuestions) {
-        /*
-         * Last question answered — show "See Results" instead of "Next Question".
-         * We use a green button to signal completion.
-         */
+        /* Last question — show "See Results" */
         nextBtn.textContent      = 'See Results';
         nextBtn.className        = 'btn-primary btn-next btn-finish';
         nextBtn.dataset.retrying = 'false';
         nextBtn.onclick          = () => showResults(false);
-
-      } else if (!isExamMode && !isCorrect) {
-        /*
-         * Practice mode, wrong answer — offer to try again on the same topic.
-         * This fetches a new question (not the same one), so questionNum still goes up.
-         */
+      } else if (!isCorrect) {
+        /* Wrong answer — offer to try again on the same topic */
         nextBtn.textContent      = 'Try Again on this Topic';
         nextBtn.dataset.retrying = 'true';
         nextBtn.onclick          = nextQuestion;
-
       } else {
-        /* Correct answer, or exam mode — standard Next Question button */
         nextBtn.textContent      = 'Next Question';
         nextBtn.dataset.retrying = 'false';
         nextBtn.onclick          = nextQuestion;
@@ -1718,6 +2112,402 @@ Return ONLY a valid JSON object — no explanation, no markdown, no code block. 
       hide('resultsSection');
       hide('timerDisplay');
       show('topicSection');
+    }
+
+    /* =============================================
+     * PBQ PROMPT BUILDER
+     * Returns the prompt string for matching or ordering questions.
+     * Uses the same formats as pbq.html — returns a different JSON
+     * schema from MCQ questions (type, scenario, instruction, etc.)
+     * =============================================
+     */
+    function buildPBQPrompt(qType) {
+      if (qType === 'matching') {
+        return `You are a CompTIA exam question writer creating a Performance-Based Question (PBQ).
+
+Generate a MATCHING performance-based question for the ${currentExam.title} exam about "${selectedTopic}".
+
+The student must match 4 items on the left to 4 correct answers on the right. Make the scenario realistic and technical — similar to what appears on the actual CompTIA exam. Good matching topics: protocols to port numbers, cable types to connectors, symptoms to components, commands to their purpose, OSI layers to devices.
+
+Return ONLY valid JSON in exactly this format (no markdown, no explanation):
+{
+  "type": "matching",
+  "scenario": "A real-world technical scenario of 2-3 sentences that sets the context.",
+  "instruction": "Match each item on the left to its correct description or pair on the right.",
+  "left":  ["Item 1", "Item 2", "Item 3", "Item 4"],
+  "right": ["Answer for Item 1", "Answer for Item 2", "Answer for Item 3", "Answer for Item 4"],
+  "correct": {
+    "Item 1": "Answer for Item 1",
+    "Item 2": "Answer for Item 2",
+    "Item 3": "Answer for Item 3",
+    "Item 4": "Answer for Item 4"
+  },
+  "explanation": "A clear explanation of all correct pairings and why, written for a beginner student."
+}
+
+IMPORTANT: Shuffle the right array so answers are NOT in the same order as the left array. The correct object must still map each left item to its correct right answer.`;
+      }
+
+      /* Ordering prompt */
+      return `You are a CompTIA exam question writer creating a Performance-Based Question (PBQ).
+
+Generate an ORDERING performance-based question for the ${currentExam.title} exam about "${selectedTopic}".
+
+The student must sort 5 steps into the correct sequence. Make it a realistic troubleshooting or configuration task. Good ordering topics: the CompTIA 6-step troubleshooting methodology, steps to install a component, steps to configure a service, steps to respond to a security incident.
+
+Return ONLY valid JSON in exactly this format (no markdown, no explanation):
+{
+  "type": "ordering",
+  "scenario": "A real-world technical scenario of 2-3 sentences that sets the context.",
+  "instruction": "Place the following steps in the correct order to complete the task.",
+  "steps": [
+    "Step that belongs at position 1",
+    "Step that belongs at position 2",
+    "Step that belongs at position 3",
+    "Step that belongs at position 4",
+    "Step that belongs at position 5"
+  ],
+  "shuffled": [
+    "Step that belongs at position 3",
+    "Step that belongs at position 1",
+    "Step that belongs at position 5",
+    "Step that belongs at position 2",
+    "Step that belongs at position 4"
+  ],
+  "explanation": "A clear explanation of why the steps must be performed in this order, written for a beginner student."
+}
+
+IMPORTANT: "steps" must be in the correct order. "shuffled" must be the SAME steps in a DIFFERENT, randomised order — this is what the student sees and must reorder.`;
+    }
+
+    /* =============================================
+     * DISPLAY PBQ
+     * Shows the interactive PBQ card and builds the
+     * matching or ordering UI depending on question type.
+     * =============================================
+     */
+    function displayPBQ(q) {
+      hide('loadingSection');
+      show('pbqSection');
+
+      /* Reset all interaction state */
+      currentPBQ    = q;
+      selectedLeft  = null;
+      pbqPairs      = {};
+      pbqPairColors = {};
+      pbqPairCount  = 0;
+      pbqPairStack  = [];
+
+      /* Update header meta */
+      document.getElementById('pbqQuestionCount').textContent =
+        'Question ' + questionNum + ' of ' + maxQuestions;
+      document.getElementById('pbqTopicLabel').textContent = selectedTopic;
+
+      /* Update progress bar */
+      const pct = ((questionNum - 1) / maxQuestions) * 100;
+      document.getElementById('pbqProgressFill').style.width = pct + '%';
+
+      /* Fill scenario and instruction */
+      document.getElementById('pbqScenarioText').textContent   = q.scenario;
+      document.getElementById('pbqInstructionText').textContent = q.instruction;
+
+      /* Reset submit button */
+      const submitBtn = document.getElementById('pbqSubmitBtn');
+      submitBtn.disabled    = false;
+      submitBtn.textContent = 'Submit Answer';
+
+      if (q.type === 'matching') {
+        buildMatchingUI(q);
+      } else {
+        buildOrderingUI(q);
+      }
+    }
+
+    /* =============================================
+     * MATCHING UI — build and interaction handlers
+     * =============================================
+     */
+    function buildMatchingUI(q) {
+      const typeLabel = document.getElementById('pbqTypeLabel');
+      typeLabel.textContent = 'Matching';
+      typeLabel.className   = 'pbq-type-label type-matching';
+
+      show('matchingSection');
+      hide('orderingSection');
+
+      /* Reset pairs display */
+      const pairsDisplay = document.getElementById('matchPairsDisplay');
+      pairsDisplay.innerHTML = '';
+      pairsDisplay.classList.add('hidden');
+      document.getElementById('undoBtn').classList.add('hidden');
+
+      /* Build left column */
+      const leftCol = document.getElementById('matchLeft');
+      leftCol.innerHTML = '';
+      q.left.forEach(item => {
+        const el        = document.createElement('div');
+        el.className    = 'match-item';
+        el.textContent  = item;
+        el.dataset.val  = item;
+        el.onclick      = () => handleLeftClick(el, q);
+        leftCol.appendChild(el);
+      });
+
+      /* Build right column in shuffled order */
+      const rightCol = document.getElementById('matchRight');
+      rightCol.innerHTML = '';
+      const shuffledRight = [...q.right].sort(() => Math.random() - 0.5);
+      shuffledRight.forEach(item => {
+        const el        = document.createElement('div');
+        el.className    = 'match-item';
+        el.textContent  = item;
+        el.dataset.val  = item;
+        el.onclick      = () => handleRightClick(el, q);
+        rightCol.appendChild(el);
+      });
+
+      /* Disable submit until all 4 pairs are made */
+      document.getElementById('pbqSubmitBtn').disabled = true;
+    }
+
+    function handleLeftClick(el, q) {
+      if (el.classList.contains('matched') || el.classList.contains('disabled')) return;
+      document.querySelectorAll('#matchLeft .match-item').forEach(i => i.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedLeft = el;
+    }
+
+    function handleRightClick(el, q) {
+      if (!selectedLeft) return;
+      if (el.classList.contains('matched') || el.classList.contains('disabled')) return;
+
+      const leftVal  = selectedLeft.dataset.val;
+      const rightVal = el.dataset.val;
+      pbqPairs[leftVal] = rightVal;
+
+      const colorIdx           = pbqPairCount % 4;
+      pbqPairColors[leftVal]   = colorIdx;
+      pbqPairCount++;
+
+      selectedLeft.classList.remove('selected');
+      selectedLeft.classList.add('matched', 'disabled', `pair-${colorIdx}`);
+      el.classList.add('matched', 'disabled', `pair-${colorIdx}`);
+      selectedLeft = null;
+
+      pbqPairStack.push({ leftVal, rightVal, colorIdx });
+      document.getElementById('undoBtn').classList.remove('hidden');
+      showMatchPair(leftVal, rightVal, colorIdx);
+
+      /* Enable submit once all pairs are made */
+      if (Object.keys(pbqPairs).length === q.left.length) {
+        document.getElementById('pbqSubmitBtn').disabled = false;
+      }
+    }
+
+    function showMatchPair(left, right, colorIdx) {
+      const display = document.getElementById('matchPairsDisplay');
+      display.classList.remove('hidden');
+
+      const row              = document.createElement('div');
+      row.className          = `match-pair-row pair-${colorIdx}`;
+      row.dataset.leftVal    = left;
+
+      const leftSpan         = document.createElement('span');
+      leftSpan.className     = 'match-pair-left';
+      leftSpan.textContent   = left;
+      const arrowSpan        = document.createElement('span');
+      arrowSpan.className    = 'match-pair-arrow';
+      arrowSpan.textContent  = '→';
+      const rightSpan        = document.createElement('span');
+      rightSpan.className    = 'match-pair-right';
+      rightSpan.textContent  = right;
+
+      row.append(leftSpan, arrowSpan, rightSpan);
+      display.appendChild(row);
+    }
+
+    function undoLastPair() {
+      if (pbqPairStack.length === 0) return;
+
+      const { leftVal, rightVal, colorIdx } = pbqPairStack.pop();
+      delete pbqPairs[leftVal];
+      delete pbqPairColors[leftVal];
+      pbqPairCount = Math.max(0, pbqPairCount - 1);
+
+      const leftEl = [...document.querySelectorAll('#matchLeft .match-item')]
+        .find(el => el.dataset.val === leftVal);
+      if (leftEl) leftEl.classList.remove('matched', 'disabled', `pair-${colorIdx}`);
+
+      const rightEl = [...document.querySelectorAll('#matchRight .match-item')]
+        .find(el => el.dataset.val === rightVal);
+      if (rightEl) rightEl.classList.remove('matched', 'disabled', `pair-${colorIdx}`);
+
+      const display = document.getElementById('matchPairsDisplay');
+      const row = [...display.querySelectorAll('.match-pair-row')]
+        .find(r => r.dataset.leftVal === leftVal);
+      if (row) row.remove();
+      if (display.children.length === 0) display.classList.add('hidden');
+
+      document.getElementById('pbqSubmitBtn').disabled = true;
+      if (pbqPairStack.length === 0) document.getElementById('undoBtn').classList.add('hidden');
+    }
+
+    /* =============================================
+     * ORDERING UI — build and move handlers
+     * =============================================
+     */
+    function buildOrderingUI(q) {
+      const typeLabel = document.getElementById('pbqTypeLabel');
+      typeLabel.textContent = 'Ordering';
+      typeLabel.className   = 'pbq-type-label type-ordering';
+
+      hide('matchingSection');
+      show('orderingSection');
+
+      const list = document.getElementById('orderList');
+      list.innerHTML = '';
+
+      /* Build the list from the shuffled order (what the student sees) */
+      q.shuffled.forEach((step, index) => {
+        const li           = document.createElement('li');
+        li.className       = 'order-item';
+        li.dataset.text    = step;
+
+        const numSpan      = document.createElement('span');
+        numSpan.className  = 'order-num';
+        numSpan.textContent = index + 1;
+
+        const textSpan     = document.createElement('span');
+        textSpan.className = 'order-text';
+        textSpan.textContent = step;
+
+        const controls     = document.createElement('div');
+        controls.className = 'order-controls';
+        controls.innerHTML =
+          '<button class="order-btn" onclick="moveStep(this,-1)" title="Move up">&#9650;</button>' +
+          '<button class="order-btn" onclick="moveStep(this,1)"  title="Move down">&#9660;</button>';
+
+        li.append(numSpan, textSpan, controls);
+        list.appendChild(li);
+      });
+
+      updateOrderNumbers();
+    }
+
+    function moveStep(btn, direction) {
+      const li    = btn.closest('.order-item');
+      const list  = document.getElementById('orderList');
+      const items = [...list.querySelectorAll('.order-item')];
+      const idx   = items.indexOf(li);
+      const swap  = idx + direction;
+      if (swap < 0 || swap >= items.length) return;
+
+      if (direction === -1) {
+        list.insertBefore(li, items[swap]);
+      } else {
+        list.insertBefore(items[swap], li);
+      }
+      updateOrderNumbers();
+    }
+
+    function updateOrderNumbers() {
+      const items = document.querySelectorAll('#orderList .order-item');
+      items.forEach((li, i) => {
+        li.querySelector('.order-num').textContent = i + 1;
+        const btns = li.querySelectorAll('.order-btn');
+        btns[0].disabled = (i === 0);
+        btns[1].disabled = (i === items.length - 1);
+      });
+    }
+
+    /* =============================================
+     * SUBMIT PBQ ANSWER
+     * In exam mode: record score silently, move to next question.
+     * No feedback shown — consistent with how MCQs work in exam mode.
+     * =============================================
+     */
+    function submitPBQAnswer() {
+      const q = currentPBQ;
+      let isCorrect;
+
+      if (q.type === 'matching') {
+        isCorrect = checkMatchingAnswer(q);
+      } else {
+        isCorrect = checkOrderingAnswer(q);
+      }
+
+      /* Update score */
+      scoreTotal++;
+      if (isCorrect) scoreCorrect++;
+      updateScoreDisplay();
+
+      /* Disable submit so it can't be clicked twice */
+      document.getElementById('pbqSubmitBtn').disabled = true;
+
+      /* In exam mode: no feedback — go straight to the next question */
+      if (isExamMode) {
+        if (scoreTotal >= maxQuestions) {
+          showResults(false);
+        } else {
+          fetchQuestion();
+        }
+        return;
+      }
+
+      /* Practice mode (if PBQs were ever added there): show feedback */
+      /* (Currently PBQs only appear in exam mode, but this handles future use) */
+      if (isCorrect) {
+        fetchQuestion();
+      } else {
+        fetchQuestion();
+      }
+    }
+
+    function checkMatchingAnswer(q) {
+      let allCorrect = true;
+      document.querySelectorAll('#matchLeft .match-item').forEach(el => {
+        const leftVal   = el.dataset.val;
+        const rightVal  = pbqPairs[leftVal];
+        const correct   = q.correct[leftVal];
+        const isRight   = rightVal === correct;
+
+        const rightEl = [...document.querySelectorAll('#matchRight .match-item')]
+          .find(r => r.dataset.val === rightVal);
+
+        /* Strip pair colors, apply final result colors */
+        [0,1,2,3].forEach(i => {
+          el.classList.remove(`pair-${i}`);
+          if (rightEl) rightEl.classList.remove(`pair-${i}`);
+        });
+
+        if (isRight) {
+          el.classList.add('matched');
+          if (rightEl) rightEl.classList.add('matched');
+        } else {
+          el.classList.remove('matched');
+          el.classList.add('wrong');
+          if (rightEl) { rightEl.classList.remove('matched'); rightEl.classList.add('wrong'); }
+          allCorrect = false;
+        }
+      });
+      return allCorrect;
+    }
+
+    function checkOrderingAnswer(q) {
+      const studentOrder = [...document.querySelectorAll('#orderList .order-item')]
+        .map(li => li.dataset.text);
+
+      let allCorrect = true;
+      studentOrder.forEach((step, i) => {
+        const li        = document.querySelectorAll('#orderList .order-item')[i];
+        const isCorrect = step === q.steps[i];
+        li.classList.add(isCorrect ? 'correct' : 'wrong');
+        if (!isCorrect) allCorrect = false;
+      });
+
+      /* Disable move buttons after submit */
+      document.querySelectorAll('.order-btn').forEach(b => b.disabled = true);
+      return allCorrect;
     }
 
     /* ---- Utility: update the score pill in the banner ---- */
