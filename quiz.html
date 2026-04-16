@@ -914,6 +914,286 @@
       font-size: 0.82rem;
       color: var(--color-text-secondary);
     }
+
+    /* =============================================
+       QUESTION PANEL SIDEBAR
+       Fixed right — exam mode only.
+       JS toggles .open class and body.qp-open.
+    ============================================= */
+    .question-panel {
+      position: fixed;
+      right: 0;
+      top: 72px;
+      bottom: 0;
+      width: 210px;
+      background-color: var(--color-surface);
+      border-left: 1px solid var(--color-border);
+      padding: 12px 10px 20px;
+      overflow-y: auto;
+      z-index: 90;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: -4px 0 20px rgba(0,0,0,0.5);
+      transition: transform 0.2s ease;
+    }
+    .question-panel.open { display: flex; }
+
+    /* Shift main content on wide screens so the panel doesn't overlap */
+    @media (min-width: 960px) {
+      body.qp-open .main-content { padding-right: 218px; }
+    }
+
+    .qp-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .qp-heading {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--color-text-secondary);
+    }
+    .qp-close-btn {
+      background: transparent;
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      color: var(--color-text-secondary);
+      font-size: 0.72rem;
+      cursor: pointer;
+      padding: 2px 7px;
+      font-family: var(--font-base);
+      line-height: 1.6;
+    }
+    .qp-close-btn:hover { border-color: var(--color-error); color: #fca5a5; }
+
+    .qp-progress-text {
+      font-size: 0.72rem;
+      color: var(--color-text-secondary);
+      flex-shrink: 0;
+    }
+    .qp-progress-text strong { color: var(--color-text-primary); }
+
+    /* 5-column number grid */
+    .qp-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    /* Individual number bubble */
+    .qp-btn {
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.64rem;
+      font-weight: 700;
+      border-radius: 4px;
+      border: 1px solid var(--color-border);
+      background-color: var(--color-bg);
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: border-color 0.1s, background-color 0.1s, color 0.1s;
+      padding: 0;
+      line-height: 1;
+      min-width: 0;
+    }
+    .qp-btn:hover                             { border-color: var(--color-primary); color: var(--color-text-primary); }
+    .qp-btn.qp-answered                       { border-color: #374151; background: #374151; color: var(--color-text-primary); }
+    .qp-btn.qp-flagged                        { border-color: var(--color-warning) !important; background: rgba(245,158,11,0.2) !important; color: var(--color-warning) !important; }
+    .qp-btn.qp-current                        { border-color: var(--color-primary) !important; background: var(--color-primary) !important; color: #fff !important; }
+    .qp-btn.qp-current.qp-flagged             { background: var(--color-warning) !important; border-color: var(--color-warning) !important; color: #000 !important; }
+
+    .qp-legend {
+      flex-shrink: 0;
+      border-top: 1px solid var(--color-border);
+      padding-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .qp-legend-row  { display: flex; align-items: center; gap: 6px; font-size: 0.68rem; color: var(--color-text-secondary); }
+    .qp-swatch      { width: 11px; height: 11px; border-radius: 3px; flex-shrink: 0; }
+    .qp-swatch-unanswered { border: 1px solid var(--color-border); background: var(--color-bg); }
+    .qp-swatch-answered   { border: 1px solid #374151; background: #374151; }
+    .qp-swatch-flagged    { border: 1px solid var(--color-warning); background: rgba(245,158,11,0.2); }
+    .qp-swatch-current    { border: 1px solid var(--color-primary); background: var(--color-primary); }
+
+    /* Floating action button — opens the panel when it's closed */
+    .qp-fab {
+      position: fixed;
+      bottom: 24px;
+      right: 16px;
+      background: var(--color-primary);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 10px 16px;
+      font-family: var(--font-base);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      z-index: 95;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+    }
+    .qp-fab.visible { display: flex; }
+
+    /* =============================================
+       FLAG FOR REVIEW BUTTON
+    ============================================= */
+    .btn-flag {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: transparent;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-button);
+      padding: 9px 14px;
+      font-family: var(--font-base);
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: border-color 0.15s, background-color 0.15s, color 0.15s;
+      min-height: 40px;
+      white-space: nowrap;
+    }
+    .btn-flag:hover      { border-color: var(--color-warning); color: var(--color-warning); }
+    .btn-flag.flagged    { border-color: var(--color-warning); background: rgba(245,158,11,0.12); color: var(--color-warning); }
+
+    /* =============================================
+       EXAM NAVIGATION ROW (Prev / Flag / Next / Review)
+       Hidden in practice mode. JS adds .visible in exam mode.
+    ============================================= */
+    .exam-nav-row {
+      display: none;
+      gap: 8px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+    .exam-nav-row.visible { display: flex; }
+
+    .btn-nav {
+      flex: 1;
+      min-width: 72px;
+      padding: 11px 12px;
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-button);
+      font-family: var(--font-base);
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+      min-height: 44px;
+      text-align: center;
+    }
+    .btn-nav:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-text-primary); }
+    .btn-nav:disabled              { opacity: 0.3; cursor: default; }
+
+    .btn-nav-review {
+      flex: 2;
+      min-width: 140px;
+      padding: 11px 16px;
+      background: var(--color-warning);
+      border: none;
+      border-radius: var(--radius-button);
+      font-family: var(--font-base);
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #000;
+      cursor: pointer;
+      min-height: 44px;
+      transition: background-color 0.15s;
+      text-align: center;
+    }
+    .btn-nav-review:hover { background: #d97706; }
+
+    /* Selected answer in exam mode — no green/red until results */
+    .answer-btn.exam-selected                    { border-color: var(--color-primary); background-color: rgba(59,130,246,0.15); }
+    .answer-btn.exam-selected .answer-letter     { color: var(--color-primary); }
+
+    /* PBQ submitted notice */
+    .pbq-submitted-notice {
+      background: rgba(22,163,74,0.1);
+      border: 1px solid var(--color-success);
+      border-radius: var(--radius-button);
+      padding: 12px 16px;
+      font-size: 0.88rem;
+      color: #bbf7d0;
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+
+    /* =============================================
+       REVIEW SCREEN
+    ============================================= */
+    .review-title    { font-size: 1.2rem; font-weight: 700; margin-bottom: 4px; }
+    .review-subtitle { font-size: 0.88rem; color: var(--color-text-secondary); margin-bottom: 22px; }
+
+    .review-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 400px) { .review-stats { grid-template-columns: 1fr 1fr; } }
+
+    .review-stat-box {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-button);
+      padding: 14px 10px;
+      text-align: center;
+    }
+    .review-stat-val { font-size: 1.6rem; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+    .review-stat-lbl { font-size: 0.7rem; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
+
+    .review-section-lbl {
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--color-text-secondary);
+      margin-bottom: 8px;
+    }
+    .review-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; min-height: 28px; }
+
+    .review-chip {
+      padding: 5px 12px;
+      border-radius: var(--radius-badge);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid;
+      font-family: var(--font-base);
+      transition: opacity 0.15s;
+      background: transparent;
+    }
+    .review-chip:hover                { opacity: 0.75; }
+    .chip-unanswered                  { border-color: var(--color-border); color: var(--color-text-secondary); }
+    .chip-flagged                     { border-color: rgba(245,158,11,0.5); background: rgba(245,158,11,0.1); color: var(--color-warning); }
+
+    .review-none { font-size: 0.85rem; color: var(--color-text-secondary); font-style: italic; margin-bottom: 18px; }
+
+    .review-action-row  { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
+    .btn-confirm-submit { background: var(--color-success); }
+    .btn-confirm-submit:hover { background: #15803d; }
+    .btn-back-exam {
+      background: transparent !important;
+      border: 1px solid var(--color-border) !important;
+      color: var(--color-text-secondary) !important;
+    }
+    .btn-back-exam:hover { border-color: var(--color-primary) !important; color: var(--color-text-primary) !important; }
   </style>
 </head>
 
@@ -940,7 +1220,7 @@
 
       <!-- Score pill — always visible -->
       <div class="score-display" id="scoreDisplay">
-        Score: <span id="scoreCorrect">0</span> / <span id="scoreTotal">0</span>
+        <span id="scoreLabel">Score</span>: <span id="scoreCorrect">0</span> / <span id="scoreTotal">0</span>
       </div>
 
       <!-- Timer — only shown during exam mode -->
@@ -1049,6 +1329,14 @@
         Tip: press <kbd style="font-size:0.7rem;padding:1px 5px;border:1px solid var(--color-border);border-radius:4px;">A</kbd>–<kbd style="font-size:0.7rem;padding:1px 5px;border:1px solid var(--color-border);border-radius:4px;">D</kbd> or <kbd style="font-size:0.7rem;padding:1px 5px;border:1px solid var(--color-border);border-radius:4px;">1</kbd>–<kbd style="font-size:0.7rem;padding:1px 5px;border:1px solid var(--color-border);border-radius:4px;">4</kbd> to answer
       </p>
 
+      <!-- Exam mode navigation: Flag / Prev / Next / Review+Submit -->
+      <div id="examNavRow" class="exam-nav-row">
+        <button id="btnFlag" class="btn-flag" onclick="toggleFlag()">&#9873; Flag</button>
+        <button id="btnPrev" class="btn-nav" onclick="examNavPrev()">&#8592; Prev</button>
+        <button id="btnNext" class="btn-nav" onclick="examNavNext()">Next &#8594;</button>
+        <button class="btn-nav-review" onclick="showReviewScreen()">Review &amp; Submit</button>
+      </div>
+
       <!-- Practice mode: full feedback with explanation -->
       <div id="feedback" class="feedback">
         <p class="feedback-label" id="feedbackLabel"></p>
@@ -1115,11 +1403,24 @@
         <ol id="orderList" class="order-list"></ol>
       </div>
 
+      <!-- Submitted notice — shown in exam mode when this PBQ is already done -->
+      <div id="pbqSubmittedNotice" class="pbq-submitted-notice hidden">
+        &#10003; You have already submitted this question.
+      </div>
+
       <!-- Submit button (disabled until all pairs are made) -->
       <button id="pbqSubmitBtn" class="btn-primary" style="margin-top:20px"
               onclick="submitPBQAnswer()">
         Submit Answer
       </button>
+
+      <!-- Exam mode PBQ navigation: Flag / Prev / Next / Review+Submit -->
+      <div id="examPBQNavRow" class="exam-nav-row">
+        <button id="btnPBQFlag" class="btn-flag" onclick="toggleFlag()">&#9873; Flag</button>
+        <button id="btnPBQPrev" class="btn-nav" onclick="examNavPrev()">&#8592; Prev</button>
+        <button id="btnPBQNext" class="btn-nav" onclick="examNavNext()">Next &#8594;</button>
+        <button class="btn-nav-review" onclick="showReviewScreen()">Review &amp; Submit</button>
+      </div>
     </div>
 
     <!--
@@ -1171,6 +1472,41 @@
         Try Another Test
       </button>
 
+    </div>
+
+    <!--
+      REVIEW SCREEN — exam mode only.
+      Shown when the student clicks "Review & Submit".
+    -->
+    <div id="reviewSection" class="card hidden">
+      <h2 class="review-title">Review &amp; Submit</h2>
+      <p class="review-subtitle">Check your progress before submitting the exam.</p>
+
+      <div class="review-stats">
+        <div class="review-stat-box">
+          <div id="reviewAnswered" class="review-stat-val">0</div>
+          <div class="review-stat-lbl">Answered</div>
+        </div>
+        <div class="review-stat-box">
+          <div id="reviewUnanswered" class="review-stat-val" style="color:var(--color-error)">0</div>
+          <div class="review-stat-lbl">Unanswered</div>
+        </div>
+        <div class="review-stat-box">
+          <div id="reviewFlagged" class="review-stat-val" style="color:var(--color-warning)">0</div>
+          <div class="review-stat-lbl">Flagged</div>
+        </div>
+      </div>
+
+      <p class="review-section-lbl">Unanswered Questions</p>
+      <div id="reviewUnansweredChips" class="review-chips"></div>
+
+      <p class="review-section-lbl">Flagged for Review</p>
+      <div id="reviewFlaggedChips" class="review-chips"></div>
+
+      <div class="review-action-row">
+        <button class="btn-primary btn-confirm-submit" onclick="confirmSubmit()">&#10003; Confirm &amp; Submit Exam</button>
+        <button class="btn-primary btn-back-exam" onclick="backFromReview()">&#8592; Back to Exam</button>
+      </div>
     </div>
 
   </main>
@@ -1292,11 +1628,12 @@
 
     /*
      * Exam question queue — built once when the exam starts.
-     * Each entry is { type: 'pbq' | 'mcq', topic: 'Topic Name' }.
-     * The first 5 are PBQs, the rest are MCQs distributed by domain weight.
+     * Each slot: { type, topic, data, answer, flagged, pbqCorrect }
+     * data: null until fetched from API; answer: null until student selects.
      */
     let examQuestionQueue   = [];
     let currentQuestionType = 'mcq'; // set per question when pulling from the queue
+    let currentExamSlot     = 0;     // 1-based active slot index (exam mode only)
 
     /* PBQ interaction state (matching + ordering) */
     let currentPBQ    = null;   // The parsed PBQ object currently on screen
@@ -1445,12 +1782,14 @@
         show('timerDisplay');
         startTimer();
 
-        document.getElementById('loadingText').textContent = 'Loading performance-based question 1 of 5...';
+        /* Build and show the question number panel, then navigate to slot 1 */
+        buildQuestionPanelGrid();
+        showQuestionPanel();
+        navigateToSlot(1);
       } else {
         document.getElementById('loadingText').textContent = 'Generating your question...';
+        fetchQuestion();
       }
-
-      fetchQuestion();
     }
 
     /*
@@ -1490,7 +1829,7 @@
 
       /* --- First 5 slots: one PBQ per topic (cycling if fewer than 5 topics) --- */
       for (let i = 0; i < 5; i++) {
-        queue.push({ type: 'pbq', topic: topics[i % topics.length] });
+        queue.push({ type: 'pbq', topic: topics[i % topics.length], data: null, answer: null, flagged: false, pbqCorrect: null });
       }
 
       /* --- Remaining 85 slots: MCQs distributed by official domain weight --- */
@@ -1503,7 +1842,7 @@
       const mcqSlots = [];
       topics.forEach((topic, i) => {
         for (let j = 0; j < mcqCounts[i]; j++) {
-          mcqSlots.push({ type: 'mcq', topic });
+          mcqSlots.push({ type: 'mcq', topic, data: null, answer: null, flagged: false, pbqCorrect: null });
         }
       });
 
@@ -1579,9 +1918,126 @@
 
     /*
      * =============================================
+     * MCQ PROMPT BUILDER
+     * Shared helper used by fetchQuestion (practice) and loadExamSlot (exam).
+     * =============================================
+     */
+    function buildMCQPrompt(seedLetter) {
+      return `You are a CompTIA exam question writer. Generate one multiple choice question for the ${currentExam.title} exam about the topic: "${selectedTopic}".
+
+Return ONLY a valid JSON object — no explanation, no markdown, no code block. Use exactly this structure:
+{
+  "question": "The full question text here",
+  "options": {
+    "A": "First option",
+    "B": "Second option",
+    "C": "Third option",
+    "D": "Fourth option"
+  },
+  "correct": "${seedLetter}",
+  "explanation": "A clear explanation of why the correct answer is right and why the others are wrong. Written for a beginner student."
+}
+
+RULES:
+- The "correct" field MUST match the letter of whichever option actually contains the right answer.
+- Place the correct answer in position ${seedLetter} — write the right answer as option ${seedLetter} and put wrong distractors in the other three positions.
+- Write all four options so they look plausible to someone studying for CompTIA — no obviously wrong answers.`;
+    }
+
+    /*
+     * =============================================
+     * EXAM SLOT NAVIGATION (exam mode only)
+     * navigateToSlot(n) — move to question n.
+     * loadExamSlot(n)   — fetch from API if slot.data is null.
+     * =============================================
+     */
+    async function navigateToSlot(n) {
+      if (n < 1 || n > maxQuestions) return;
+      currentExamSlot     = n;
+      questionNum         = n;
+      const slot          = examQuestionQueue[n - 1];
+      selectedTopic       = slot.topic;
+      currentQuestionType = slot.type;
+
+      if (slot.data) {
+        /* Already fetched — display immediately without spinner */
+        hide('loadingSection');
+        if (slot.type === 'pbq') {
+          displayPBQ(slot.data);
+        } else {
+          displayQuestion(slot.data);
+        }
+      } else {
+        /* Not yet fetched — show spinner then load */
+        show('loadingSection');
+        hide('questionSection');
+        hide('pbqSection');
+        document.getElementById('loadingText').textContent =
+          slot.type === 'pbq'
+            ? 'Loading performance-based question ' + n + ' of 5...'
+            : 'Loading question ' + n + ' of 90...';
+        await loadExamSlot(n);
+      }
+
+      updateQuestionPanel();
+    }
+
+    async function loadExamSlot(n) {
+      const slot          = examQuestionQueue[n - 1];
+      selectedTopic       = slot.topic;
+      currentQuestionType = slot.type;
+
+      let prompt;
+      if (slot.type === 'pbq') {
+        const pbqType = (n % 2 === 1) ? 'matching' : 'ordering';
+        prompt        = buildPBQPrompt(pbqType);
+      } else {
+        const seedLetters = ['A', 'B', 'C', 'D'];
+        const seedLetter  = seedLetters[Math.floor(Math.random() * 4)];
+        prompt = buildMCQPrompt(seedLetter);
+      }
+
+      try {
+        const response = await fetch(WORKER_URL, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ prompt }),
+        });
+        const data    = await response.json();
+        const cleaned = data.content[0].text.replace(/```json|```/g, '').trim();
+        const parsed  = JSON.parse(cleaned);
+
+        slot.data = parsed;
+        hide('loadingSection');
+
+        if (slot.type === 'pbq') {
+          displayPBQ(parsed);
+        } else {
+          displayQuestion(parsed);
+        }
+      } catch (err) {
+        hide('loadingSection');
+        show('questionSection');
+        document.getElementById('questionText').textContent =
+          'Could not load this question. Check your connection and try again.';
+        const grid    = document.getElementById('answerGrid');
+        grid.innerHTML = '';
+        const retryBtn = document.createElement('button');
+        retryBtn.className   = 'btn-primary';
+        retryBtn.style.marginTop = '16px';
+        retryBtn.textContent = 'Retry';
+        retryBtn.onclick     = () => loadExamSlot(n);
+        grid.appendChild(retryBtn);
+        console.error('Slot fetch error:', err);
+      }
+    }
+
+    /*
+     * =============================================
      * FETCH QUESTION
      * Sends a prompt to your Cloudflare Worker, which forwards
      * it to the Anthropic API and returns a question in JSON format.
+     * Practice mode only — exam mode uses navigateToSlot/loadExamSlot.
      * =============================================
      */
     async function fetchQuestion() {
@@ -1632,25 +2088,7 @@
         const seedLetters = ['A', 'B', 'C', 'D'];
         const seedLetter  = seedLetters[Math.floor(Math.random() * 4)];
 
-        prompt = `You are a CompTIA exam question writer. Generate one multiple choice question for the ${currentExam.title} exam about the topic: "${selectedTopic}".
-
-Return ONLY a valid JSON object — no explanation, no markdown, no code block. Use exactly this structure:
-{
-  "question": "The full question text here",
-  "options": {
-    "A": "First option",
-    "B": "Second option",
-    "C": "Third option",
-    "D": "Fourth option"
-  },
-  "correct": "${seedLetter}",
-  "explanation": "A clear explanation of why the correct answer is right and why the others are wrong. Written for a beginner student."
-}
-
-RULES:
-- The "correct" field MUST match the letter of whichever option actually contains the right answer.
-- Place the correct answer in position ${seedLetter} — write the right answer as option ${seedLetter} and put wrong distractors in the other three positions.
-- Write all four options so they look plausible to someone studying for CompTIA — no obviously wrong answers.`;
+        prompt = buildMCQPrompt(seedLetter);
       }
 
       try {
@@ -1758,16 +2196,42 @@ RULES:
         grid.appendChild(btn);
       });
 
-      /* Reset feedback (practice mode) */
-      const feedback = document.getElementById('feedback');
-      feedback.className = 'feedback'; /* Remove correct/wrong classes = hides it */
+      if (isExamMode) {
+        /* Exam mode: restore saved answer, show nav row, hide practice-only elements */
+        const slot = examQuestionQueue[currentExamSlot - 1];
 
-      /* Hide the next button until an answer is chosen */
-      const nextBtn = document.getElementById('nextBtn');
-      nextBtn.classList.remove('visible', 'btn-finish');
-      nextBtn.className = 'btn-primary btn-next';
-      nextBtn.dataset.retrying = 'false';
-      nextBtn.onclick = nextQuestion;
+        /* Restore previously selected answer (blue highlight) */
+        if (slot.answer) {
+          document.querySelectorAll('.answer-btn').forEach((btn, idx) => {
+            if (['A', 'B', 'C', 'D'][idx] === slot.answer) {
+              btn.classList.add('exam-selected');
+            }
+          });
+        }
+
+        /* Sync flag button state */
+        const flagBtn = document.getElementById('btnFlag');
+        flagBtn.className = slot.flagged ? 'btn-flag flagged' : 'btn-flag';
+        flagBtn.innerHTML = slot.flagged ? '&#9873; Flagged' : '&#9873; Flag';
+
+        /* Show exam nav row, keep practice elements reset/hidden */
+        document.getElementById('examNavRow').classList.add('visible');
+        document.getElementById('feedback').className = 'feedback';
+        document.getElementById('nextBtn').className  = 'btn-primary btn-next';
+
+        updateExamNavButtons();
+      } else {
+        /* Practice mode: reset feedback and next button */
+        document.getElementById('examNavRow').classList.remove('visible');
+        const feedback = document.getElementById('feedback');
+        feedback.className = 'feedback';
+
+        const nextBtn = document.getElementById('nextBtn');
+        nextBtn.classList.remove('visible', 'btn-finish');
+        nextBtn.className = 'btn-primary btn-next';
+        nextBtn.dataset.retrying = 'false';
+        nextBtn.onclick = nextQuestion;
+      }
     }
 
     /*
@@ -1814,24 +2278,32 @@ RULES:
     function checkAnswer(chosen, q) {
       const isCorrect = chosen === q.correct;
 
-      /* Update score */
+      if (isExamMode) {
+        /*
+         * EXAM MODE: save the chosen answer to the slot and highlight it.
+         * No automatic advance — the student uses Prev/Next to navigate.
+         * Score is computed from all slots at the time of submission.
+         */
+        const slot  = examQuestionQueue[currentExamSlot - 1];
+        slot.answer = chosen;
+
+        /* Clear any previous selection, apply new highlight */
+        document.querySelectorAll('.answer-btn').forEach((btn, idx) => {
+          btn.classList.remove('exam-selected');
+          if (['A', 'B', 'C', 'D'][idx] === chosen) {
+            btn.classList.add('exam-selected');
+          }
+        });
+
+        updateQuestionPanel();
+        updateScoreDisplay();
+        return; /* Skip all the practice-mode UI below */
+      }
+
+      /* PRACTICE MODE: update live score */
       scoreTotal++;
       if (isCorrect) scoreCorrect++;
       updateScoreDisplay();
-
-      if (isExamMode) {
-        /*
-         * EXAM MODE: record the answer silently and move on immediately.
-         * No highlighting, no feedback, no button — just like the real exam.
-         * The score is tracked internally and revealed at the end.
-         */
-        if (scoreTotal >= maxQuestions) {
-          showResults(false);
-        } else {
-          fetchQuestion();
-        }
-        return; /* Skip all the practice-mode UI below */
-      }
 
       /*
        * PRACTICE MODE: disable buttons, highlight correct/wrong,
@@ -1898,25 +2370,7 @@ RULES:
       /* Same topic, same type (practice = always MCQ) */
       const seedLetters2 = ['A', 'B', 'C', 'D'];
       const seedLetter2  = seedLetters2[Math.floor(Math.random() * 4)];
-      const nextPrompt = `You are a CompTIA exam question writer. Generate one multiple choice question for the ${currentExam.title} exam about the topic: "${selectedTopic}".
-
-Return ONLY a valid JSON object — no explanation, no markdown, no code block. Use exactly this structure:
-{
-  "question": "The full question text here",
-  "options": {
-    "A": "First option",
-    "B": "Second option",
-    "C": "Third option",
-    "D": "Fourth option"
-  },
-  "correct": "${seedLetter2}",
-  "explanation": "A clear explanation of why the correct answer is right and why the others are wrong. Written for a beginner student."
-}
-
-RULES:
-- The "correct" field MUST match the letter of whichever option actually contains the right answer.
-- Place the correct answer in position ${seedLetter2} — write the right answer as option ${seedLetter2} and put wrong distractors in the other three positions.
-- Write all four options so they look plausible to someone studying for CompTIA — no obviously wrong answers.`;
+      const nextPrompt = buildMCQPrompt(seedLetter2);
 
       try {
         const res  = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: nextPrompt }) });
@@ -1960,7 +2414,29 @@ RULES:
         timerInterval = null;
       }
 
+      /* In exam mode, compute score from queue slots (handles free navigation) */
+      if (isExamMode) {
+        let correct  = 0;
+        let answered = 0;
+        examQuestionQueue.forEach(slot => {
+          if (slot.answer !== null) {
+            answered++;
+            if (slot.type === 'pbq') {
+              if (slot.pbqCorrect === true) correct++;
+            } else if (slot.data && slot.answer === slot.data.correct) {
+              correct++;
+            }
+          }
+        });
+        scoreCorrect = correct;
+        scoreTotal   = answered;
+        hideQuestionPanel();
+        document.getElementById('qpFab').classList.remove('visible');
+      }
+
       hide('questionSection');
+      hide('pbqSection');
+      hide('reviewSection');
       hide('loadingSection');
       hide('timerDisplay');
       show('resultsSection');
@@ -2051,6 +2527,13 @@ RULES:
       prefetchInProgress  = false;
       examQuestionQueue   = [];
       currentQuestionType = 'mcq';
+      currentExamSlot     = 0;
+
+      /* Hide question panel (and ensure FAB is also hidden outside exam) */
+      hideQuestionPanel();
+      document.getElementById('qpFab').classList.remove('visible');
+      document.getElementById('scoreLabel').textContent = 'Score';
+
       updateScoreDisplay();
 
       /* Reset topic selector UI */
@@ -2062,6 +2545,7 @@ RULES:
       selectMode('practice');   /* This resets the mode buttons and start button state */
 
       hide('resultsSection');
+      hide('reviewSection');
       hide('timerDisplay');
       show('topicSection');
     }
@@ -2172,6 +2656,37 @@ IMPORTANT: "steps" must be in the correct order. "shuffled" must be the SAME ste
         buildMatchingUI(q);
       } else {
         buildOrderingUI(q);
+      }
+
+      if (isExamMode) {
+        const slot = examQuestionQueue[currentExamSlot - 1];
+
+        /* Show exam PBQ nav row */
+        document.getElementById('examPBQNavRow').classList.add('visible');
+
+        /* Sync flag button state */
+        const flagBtn = document.getElementById('btnPBQFlag');
+        flagBtn.className = slot.flagged ? 'btn-flag flagged' : 'btn-flag';
+        flagBtn.innerHTML = slot.flagged ? '&#9873; Flagged' : '&#9873; Flag';
+
+        updateExamNavButtons();
+
+        /* Handle already-submitted PBQ — lock all interaction */
+        if (slot.answer === 'submitted') {
+          show('pbqSubmittedNotice');
+          document.getElementById('pbqSubmitBtn').disabled = true;
+          document.querySelectorAll('#matchLeft .match-item, #matchRight .match-item').forEach(el => {
+            el.onclick = null;
+            el.style.cursor = 'default';
+          });
+          document.querySelectorAll('.order-btn').forEach(btn => btn.disabled = true);
+          document.getElementById('undoBtn').classList.add('hidden');
+        } else {
+          hide('pbqSubmittedNotice');
+        }
+      } else {
+        document.getElementById('examPBQNavRow').classList.remove('visible');
+        hide('pbqSubmittedNotice');
       }
     }
 
@@ -2388,23 +2903,36 @@ IMPORTANT: "steps" must be in the correct order. "shuffled" must be the SAME ste
         isCorrect = checkOrderingAnswer(q);
       }
 
-      /* Update score */
-      scoreTotal++;
-      if (isCorrect) scoreCorrect++;
-      updateScoreDisplay();
-
       /* Disable submit so it can't be clicked twice */
       document.getElementById('pbqSubmitBtn').disabled = true;
 
-      /* In exam mode: no feedback — go straight to the next question */
+      /* In exam mode: save result to slot, lock UI, show nav — don't auto-advance */
       if (isExamMode) {
-        if (scoreTotal >= maxQuestions) {
-          showResults(false);
-        } else {
-          fetchQuestion();
-        }
+        const slot      = examQuestionQueue[currentExamSlot - 1];
+        slot.pbqCorrect = isCorrect;
+        slot.answer     = 'submitted';
+
+        /* Show submitted notice and lock all interactive elements */
+        show('pbqSubmittedNotice');
+        document.querySelectorAll('#matchLeft .match-item, #matchRight .match-item').forEach(el => {
+          el.onclick = null;
+          el.style.cursor = 'default';
+        });
+        document.querySelectorAll('.order-btn').forEach(btn => btn.disabled = true);
+        document.getElementById('undoBtn').classList.add('hidden');
+
+        /* Show the PBQ nav row */
+        document.getElementById('examPBQNavRow').classList.add('visible');
+        updateExamNavButtons();
+        updateQuestionPanel();
+        updateScoreDisplay();
         return;
       }
+
+      /* PRACTICE MODE: update live score */
+      scoreTotal++;
+      if (isCorrect) scoreCorrect++;
+      updateScoreDisplay();
 
       /* Practice mode (if PBQs were ever added there): show feedback */
       /* (Currently PBQs only appear in exam mode, but this handles future use) */
@@ -2464,8 +2992,16 @@ IMPORTANT: "steps" must be in the correct order. "shuffled" must be the SAME ste
 
     /* ---- Utility: update the score pill in the banner ---- */
     function updateScoreDisplay() {
-      document.getElementById('scoreCorrect').textContent = scoreCorrect;
-      document.getElementById('scoreTotal').textContent   = scoreTotal;
+      if (isExamMode && examQuestionQueue.length > 0) {
+        const answered = examQuestionQueue.filter(s => s.answer !== null).length;
+        document.getElementById('scoreLabel').textContent   = 'Answered';
+        document.getElementById('scoreCorrect').textContent = answered;
+        document.getElementById('scoreTotal').textContent   = maxQuestions;
+      } else {
+        document.getElementById('scoreLabel').textContent   = 'Score';
+        document.getElementById('scoreCorrect').textContent = scoreCorrect;
+        document.getElementById('scoreTotal').textContent   = scoreTotal;
+      }
     }
 
     /* ---- Utility: show/hide elements ---- */
@@ -2526,9 +3062,194 @@ IMPORTANT: "steps" must be in the correct order. "shuffled" must be the SAME ste
         `<p style="font-size:0.8rem;font-weight:700;color:var(--color-text-secondary);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;">Recent Sessions</p>` + rows;
     }
 
+    /* =============================================
+     * QUESTION PANEL — sidebar with 90 number buttons
+     * =============================================
+     */
+    function buildQuestionPanelGrid() {
+      const grid = document.getElementById('qpGrid');
+      grid.innerHTML = '';
+      for (let i = 1; i <= 90; i++) {
+        const btn       = document.createElement('button');
+        btn.type        = 'button';
+        btn.className   = 'qp-btn';
+        btn.textContent = i;
+        btn.id          = 'qpBtn' + i;
+        btn.onclick     = () => navigateToSlot(i);
+        grid.appendChild(btn);
+      }
+    }
+
+    function updateQuestionPanel() {
+      if (!isExamMode) return;
+      let answeredCount = 0;
+      examQuestionQueue.forEach((slot, idx) => {
+        const n   = idx + 1;
+        const btn = document.getElementById('qpBtn' + n);
+        if (!btn) return;
+        btn.className = 'qp-btn';
+        if (slot.answer !== null) { answeredCount++; btn.classList.add('qp-answered'); }
+        if (slot.flagged)                              btn.classList.add('qp-flagged');
+        if (n === currentExamSlot)                     btn.classList.add('qp-current');
+      });
+      document.getElementById('qpAnsweredCount').textContent = answeredCount;
+    }
+
+    function showQuestionPanel() {
+      document.getElementById('questionPanel').classList.add('open');
+      document.getElementById('qpFab').classList.remove('visible');
+      document.body.classList.add('qp-open');
+    }
+
+    function hideQuestionPanel() {
+      document.getElementById('questionPanel').classList.remove('open');
+      document.getElementById('qpFab').classList.add('visible');
+      document.body.classList.remove('qp-open');
+    }
+
+    /* =============================================
+     * FLAG FOR REVIEW
+     * =============================================
+     */
+    function toggleFlag() {
+      if (!isExamMode || currentExamSlot < 1) return;
+      const slot   = examQuestionQueue[currentExamSlot - 1];
+      slot.flagged = !slot.flagged;
+
+      const flagClass = slot.flagged ? 'btn-flag flagged' : 'btn-flag';
+      const flagHtml  = slot.flagged ? '&#9873; Flagged' : '&#9873; Flag';
+
+      ['btnFlag', 'btnPBQFlag'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) { btn.className = flagClass; btn.innerHTML = flagHtml; }
+      });
+
+      updateQuestionPanel();
+    }
+
+    /* =============================================
+     * EXAM NAVIGATION — Prev / Next buttons
+     * =============================================
+     */
+    function examNavPrev() { navigateToSlot(currentExamSlot - 1); }
+    function examNavNext() { navigateToSlot(currentExamSlot + 1); }
+
+    function updateExamNavButtons() {
+      const atFirst = (currentExamSlot <= 1);
+      const atLast  = (currentExamSlot >= maxQuestions);
+
+      ['btnPrev', 'btnPBQPrev'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) btn.disabled = atFirst;
+      });
+      ['btnNext', 'btnPBQNext'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) btn.disabled = atLast;
+      });
+    }
+
+    /* =============================================
+     * REVIEW SCREEN — summary before final submission
+     * =============================================
+     */
+    function showReviewScreen() {
+      hide('questionSection');
+      hide('pbqSection');
+      hide('loadingSection');
+      show('reviewSection');
+
+      const answered   = examQuestionQueue.filter(s => s.answer !== null).length;
+      const unanswered = maxQuestions - answered;
+      const flagged    = examQuestionQueue.filter(s => s.flagged).length;
+
+      document.getElementById('reviewAnswered').textContent   = answered;
+      document.getElementById('reviewUnanswered').textContent = unanswered;
+      document.getElementById('reviewFlagged').textContent    = flagged;
+
+      /* Unanswered chips */
+      const uChips = document.getElementById('reviewUnansweredChips');
+      uChips.innerHTML = '';
+      if (unanswered === 0) {
+        uChips.innerHTML = '<span class="review-none">All questions answered!</span>';
+      } else {
+        examQuestionQueue.forEach((slot, idx) => {
+          if (slot.answer === null) {
+            const n    = idx + 1;
+            const chip = document.createElement('button');
+            chip.className   = 'review-chip chip-unanswered';
+            chip.textContent = n;
+            chip.onclick     = () => { hide('reviewSection'); navigateToSlot(n); };
+            uChips.appendChild(chip);
+          }
+        });
+      }
+
+      /* Flagged chips */
+      const fChips = document.getElementById('reviewFlaggedChips');
+      fChips.innerHTML = '';
+      if (flagged === 0) {
+        fChips.innerHTML = '<span class="review-none">No questions flagged.</span>';
+      } else {
+        examQuestionQueue.forEach((slot, idx) => {
+          if (slot.flagged) {
+            const n    = idx + 1;
+            const chip = document.createElement('button');
+            chip.className   = 'review-chip chip-flagged';
+            chip.textContent = n;
+            chip.onclick     = () => { hide('reviewSection'); navigateToSlot(n); };
+            fChips.appendChild(chip);
+          }
+        });
+      }
+    }
+
+    function confirmSubmit() {
+      /* Compute final score from all queue slots */
+      let correct  = 0;
+      let answered = 0;
+      examQuestionQueue.forEach(slot => {
+        if (slot.answer !== null) {
+          answered++;
+          if (slot.type === 'pbq') {
+            if (slot.pbqCorrect === true) correct++;
+          } else if (slot.data && slot.answer === slot.data.correct) {
+            correct++;
+          }
+        }
+      });
+      scoreCorrect = correct;
+      scoreTotal   = answered;
+      hide('reviewSection');
+      showResults(false);
+    }
+
+    function backFromReview() {
+      hide('reviewSection');
+      navigateToSlot(currentExamSlot);
+    }
+
     /* Run init() as soon as the page loads */
     init();
   </script>
+
+  <!-- QUESTION PANEL SIDEBAR — exam mode only -->
+  <div id="questionPanel" class="question-panel">
+    <div class="qp-top-row">
+      <span class="qp-heading">Questions</span>
+      <button class="qp-close-btn" onclick="hideQuestionPanel()">Hide</button>
+    </div>
+    <p class="qp-progress-text"><strong id="qpAnsweredCount">0</strong> / 90 answered</p>
+    <div id="qpGrid" class="qp-grid"></div>
+    <div class="qp-legend">
+      <div class="qp-legend-row"><span class="qp-swatch qp-swatch-current"></span> Current</div>
+      <div class="qp-legend-row"><span class="qp-swatch qp-swatch-answered"></span> Answered</div>
+      <div class="qp-legend-row"><span class="qp-swatch qp-swatch-flagged"></span> Flagged</div>
+      <div class="qp-legend-row"><span class="qp-swatch qp-swatch-unanswered"></span> Unanswered</div>
+    </div>
+  </div>
+
+  <!-- FAB — reopens the panel when it's hidden -->
+  <button id="qpFab" class="qp-fab" onclick="showQuestionPanel()">&#9776; Questions</button>
 
   <footer class="site-footer">
     &copy; <span id="year"></span> K. Hinds &mdash; Cert Prep by the Cyber Ninja. All rights reserved.

@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-04-16T11:02:35.165Z",
+  "projectRoot": "/mnt/e/AI Projects/certprep",
+  "structure": {
+    "hasPackageJson": false,
+    "hasTsConfig": false,
+    "hasClaudeConfig": true,
+    "hasClaudeFlow": true
+  },
+  "scannedAt": 1776337355173
+}

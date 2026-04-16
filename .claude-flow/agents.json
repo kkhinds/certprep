@@ -51,6 +51,45 @@
       },
       "createdAt": "2026-04-16T08:18:18.781Z",
       "domain": "hive-mind"
+    },
+    "hive-worker-1776329021676-t9sg": {
+      "agentId": "hive-worker-1776329021676-t9sg",
+      "agentType": "worker",
+      "status": "idle",
+      "health": 1,
+      "taskCount": 0,
+      "config": {
+        "role": "worker",
+        "hiveRole": "worker"
+      },
+      "createdAt": "2026-04-16T08:43:41.676Z",
+      "domain": "hive-mind"
+    },
+    "hive-worker-1776329034260-nvb5": {
+      "agentId": "hive-worker-1776329034260-nvb5",
+      "agentType": "worker",
+      "status": "idle",
+      "health": 1,
+      "taskCount": 0,
+      "config": {
+        "role": "worker",
+        "hiveRole": "worker"
+      },
+      "createdAt": "2026-04-16T08:43:54.260Z",
+      "domain": "hive-mind"
+    },
+    "hive-worker-1776337528033-8p7i": {
+      "agentId": "hive-worker-1776337528033-8p7i",
+      "agentType": "worker",
+      "status": "idle",
+      "health": 1,
+      "taskCount": 0,
+      "config": {
+        "role": "worker",
+        "hiveRole": "worker"
+      },
+      "createdAt": "2026-04-16T11:05:28.033Z",
+      "domain": "hive-mind"
     }
   }
 }

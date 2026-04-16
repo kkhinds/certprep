@@ -5,18 +5,21 @@
     "hive-worker-1776327128999-f70p",
     "hive-worker-1776327220917-1jf7",
     "hive-worker-1776327428163-7m3y",
-    "hive-worker-1776327498781-hu5i"
+    "hive-worker-1776327498781-hu5i",
+    "hive-worker-1776329021676-t9sg",
+    "hive-worker-1776329034260-nvb5",
+    "hive-worker-1776337528033-8p7i"
   ],
   "consensus": {
     "pending": [],
     "history": []
   },
   "sharedMemory": {},
-  "createdAt": "2026-04-16T08:10:47.638Z",
-  "updatedAt": "2026-04-16T08:18:18.781Z",
+  "createdAt": "2026-04-16T11:03:34.841Z",
+  "updatedAt": "2026-04-16T11:05:28.036Z",
   "queen": {
-    "agentId": "queen-1776327047638",
-    "electedAt": "2026-04-16T08:10:47.638Z",
+    "agentId": "queen-1776337414841",
+    "electedAt": "2026-04-16T11:03:34.841Z",
     "term": 1
   }
 }
