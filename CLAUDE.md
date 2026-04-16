@@ -1,280 +1,244 @@
-# Cert Prep by the Cyber Ninja — CompTIA A+ & Network+ Study Site
+# Claude Code Configuration - RuFlo V3
 
-## What this project is
-A study website for CompTIA A+ and Network+ students (complete beginners, no IT background).
-Built stage by stage as a learning project — both to teach students AND to learn Claude Code.
+## Behavioral Rules (Always Enforced)
 
-## ⚠️ CRITICAL: API KEY SECURITY — READ BEFORE GOING LIVE
-**NEVER put the Claude API key directly in any HTML, JS, or CSS file.**
-**NEVER push an API key to GitHub — the repo is public.**
+- Do what has been asked; nothing more, nothing less
+- NEVER create files unless they're absolutely necessary for achieving your goal
+- ALWAYS prefer editing an existing file to creating a new one
+- NEVER proactively create documentation files (*.md) or README files unless explicitly requested
+- NEVER save working files, text/mds, or tests to the root folder
+- Never continuously check status after spawning a swarm — wait for results
+- ALWAYS read a file before editing it
+- NEVER commit secrets, credentials, or .env files
 
-If you see anything like this in the code, STOP and flag it immediately:
-```
-apiKey: "sk-ant-..."
-Authorization: "Bearer sk-ant-..."
-ANTHROPIC_API_KEY = "sk-ant-..."
-```
+## File Organization
 
-The correct approach is a **Cloudflare Worker** (free) that sits between
-the browser and the Anthropic API. The API key lives only in the Worker's
-environment variables — never in the frontend code.
+- NEVER save to root folder — use the directories below
+- Use `/src` for source code files
+- Use `/tests` for test files
+- Use `/docs` for documentation and markdown files
+- Use `/config` for configuration files
+- Use `/scripts` for utility scripts
+- Use `/examples` for example code
 
-**Before any `git push` to main, always run this check:**
+## Project Architecture
+
+- Follow Domain-Driven Design with bounded contexts
+- Keep files under 500 lines
+- Use typed interfaces for all public APIs
+- Prefer TDD London School (mock-first) for new code
+- Use event sourcing for state changes
+- Ensure input validation at system boundaries
+
+### Project Config
+
+- **Topology**: hierarchical-mesh
+- **Max Agents**: 15
+- **Memory**: hybrid
+- **HNSW**: Enabled
+- **Neural**: Enabled
+
+## Build & Test
+
 ```bash
-grep -r "sk-ant" .
+# Build
+npm run build
+
+# Test
+npm test
+
+# Lint
+npm run lint
 ```
-If that command returns anything, DO NOT push. Remove the key first.
 
----
+- ALWAYS run tests after making code changes
+- ALWAYS verify build succeeds before committing
 
-## Hosting & Deployment
-- **Platform**: GitHub Pages (free, public repo)
-- **Live URL**: https://kkhinds.github.io/certprep  ← update this once live
-- **Branch**: main (GitHub Pages serves from the main branch root)
+## Security Rules
 
-### How GitHub Pages works (learn this once, use it everywhere)
-1. You push code to GitHub
-2. GitHub automatically serves your HTML files as a live website
-3. index.html becomes your homepage
-4. No server needed — it's "static hosting"
+- NEVER hardcode API keys, secrets, or credentials in source files
+- NEVER commit .env files or any file containing secrets
+- Always validate user input at system boundaries
+- Always sanitize file paths to prevent directory traversal
+- Run `npx @claude-flow/cli@latest security scan` after security-related changes
 
-### First-time setup (do this once)
+## Concurrency: 1 MESSAGE = ALL RELATED OPERATIONS
+
+- All operations MUST be concurrent/parallel in a single message
+- Use Claude Code's Agent tool for spawning agents, not just MCP
+- ALWAYS spawn ALL agents in ONE message with full instructions via Agent tool
+- ALWAYS batch ALL file reads/writes/edits in ONE message
+- ALWAYS batch ALL Bash commands in ONE message
+
+## Swarm Orchestration
+
+- MUST initialize the swarm using CLI tools when starting complex tasks
+- MUST spawn concurrent agents using Claude Code's Agent tool
+- Never use CLI tools alone for execution — Agent tool agents do the actual work
+- MUST call CLI tools AND Agent tool in ONE message for complex work
+
+### 3-Tier Model Routing (ADR-026)
+
+| Tier | Handler | Latency | Cost | Use Cases |
+|------|---------|---------|------|-----------|
+| **1** | Agent Booster (WASM) | <1ms | $0 | Simple transforms (var→const, add types) — Skip LLM |
+| **2** | Haiku | ~500ms | $0.0002 | Simple tasks, low complexity (<30%) |
+| **3** | Sonnet/Opus | 2-5s | $0.003-0.015 | Complex reasoning, architecture, security (>30%) |
+
+- For Tier 1 simple transforms, use Edit tool directly — no LLM agent needed
+
+## Swarm Configuration & Anti-Drift
+
+- ALWAYS use hierarchical topology for coding swarms
+- Keep maxAgents at 6-8 for tight coordination
+- Use specialized strategy for clear role boundaries
+- Use `raft` consensus for hive-mind (leader maintains authoritative state)
+- Run frequent checkpoints via `post-task` hooks
+- Keep shared memory namespace for all agents
+
 ```bash
-# 1. Create a repo on github.com called: certprep
-# 2. Connect your local folder to it
-git init
-git remote add origin https://github.com/yourusername/certprep.git
-
-# 3. Then go to: repo → Settings → Pages
-#    Set Source to: Deploy from a branch
-#    Set Branch to: main / (root)
-#    Click Save — site goes live in about 60 seconds
+npx @claude-flow/cli@latest swarm init --topology hierarchical --max-agents 8 --strategy specialized
 ```
 
-### Deploy to production (do this every time you want to publish changes)
+## Swarm Execution Rules
+
+- ALWAYS use `run_in_background: true` for all Agent tool calls
+- ALWAYS put ALL Agent calls in ONE message for parallel execution
+- After spawning, STOP — do NOT add more tool calls or check status
+- Never poll agent status repeatedly — trust agents to return
+- When agent results arrive, review ALL results before proceeding
+
+## V3 CLI Commands
+
+### Core Commands
+
+| Command | Subcommands | Description |
+|---------|-------------|-------------|
+| `init` | 4 | Project initialization |
+| `agent` | 8 | Agent lifecycle management |
+| `swarm` | 6 | Multi-agent swarm coordination |
+| `memory` | 11 | AgentDB memory with HNSW search |
+| `task` | 6 | Task creation and lifecycle |
+| `session` | 7 | Session state management |
+| `hooks` | 17 | Self-learning hooks + 12 workers |
+| `hive-mind` | 6 | Byzantine fault-tolerant consensus |
+
+### Quick CLI Examples
+
 ```bash
-git add .
-git commit -m "describe what you changed"
-git push origin main
+npx @claude-flow/cli@latest init --wizard
+npx @claude-flow/cli@latest agent spawn -t coder --name my-coder
+npx @claude-flow/cli@latest swarm init --v3-mode
+npx @claude-flow/cli@latest memory search --query "authentication patterns"
+npx @claude-flow/cli@latest doctor --fix
 ```
 
-### ⚠️ API proxy setup (do this before the quiz engine goes live)
-The Claude API calls must go through a Cloudflare Worker, not the browser directly.
+## Available Agents (16 Roles + Custom)
 
-**Worker is live:**
-```
-https://comptidda.kemar-k-hinds.workers.dev
-```
-Use this URL in quiz.html wherever the frontend needs to call the Claude API.
-The API key lives only in Cloudflare's environment variables — never in the frontend.
+### Core Development
+`coder`, `reviewer`, `tester`, `planner`, `researcher`
 
----
+### Specialized
+`security-architect`, `security-auditor`, `memory-specialist`, `performance-engineer`
 
-## Git workflow (use this on every project)
+### Coordination
+`hierarchical-coordinator`, `mesh-coordinator`, `adaptive-coordinator`
 
-### The golden rule
-`main` branch = working, live code only.
-All new features are built on their own branch, then merged in when ready.
+### GitHub & Repository
+`pr-manager`, `code-review-swarm`, `issue-tracker`, `release-manager`
 
-### Branch naming
-```
-feature/quiz-engine
-feature/flashcards
-feature/network-diagram
-feature/progress-dashboard
-feature/mini-games
-```
+Any string can be used as a custom agent type — these are the typed roles with specialized behavior.
 
-### Daily workflow
+## Memory & Vector Search
+
+### MCP Tools (use via ToolSearch to discover)
+
+| Tool | Description |
+|------|-------------|
+| `memory_store` | Store value with ONNX 384-dim vector embedding |
+| `memory_search` | Semantic vector search by query |
+| `memory_retrieve` | Get entry by key |
+| `memory_list` | List entries in namespace |
+| `memory_delete` | Delete entry |
+| `memory_import_claude` | Import Claude Code memories into AgentDB (allProjects=true for all) |
+| `memory_search_unified` | Search across ALL namespaces (Claude + AgentDB + patterns) |
+| `memory_bridge_status` | Show bridge health, vectors, SONA, intelligence |
+
+### CLI Commands
+
 ```bash
-# Start a new feature
-git checkout -b feature/quiz-engine
+# Store with vector embedding
+npx @claude-flow/cli@latest memory store --key "pattern-auth" --value "JWT with refresh" --namespace patterns
 
-# Save your work as you go
-git add .
-git commit -m "add topic selector to quiz page"
+# Semantic search
+npx @claude-flow/cli@latest memory search --query "authentication patterns"
 
-# When the feature is done and tested, merge into main
-git checkout main
-git merge feature/quiz-engine -m "Merge quiz engine feature"
-git push origin main
-
-# Clean up the old branch
-git branch -d feature/quiz-engine
+# Import all Claude Code memories into AgentDB
+node .claude/helpers/auto-memory-hook.mjs import-all
 ```
 
-### Check what's going on at any time
+### Claude Code ↔ AgentDB Bridge
+
+Claude Code auto-memory files (`~/.claude/projects/*/memory/*.md`) are automatically imported into AgentDB with ONNX vector embeddings on session start. Use `memory_search_unified` to search across both stores.
+
+## Key MCP Tools (314 available — use ToolSearch to discover)
+
+### Most Used Tools
+
+| Category | Tools | What They Do |
+|----------|-------|-------------|
+| **Memory** | `memory_store`, `memory_search`, `memory_search_unified` | Store/search with ONNX vector embeddings |
+| **Claude Bridge** | `memory_import_claude`, `memory_bridge_status` | Import Claude memories into AgentDB |
+| **Swarm** | `swarm_init`, `swarm_status`, `swarm_health` | Multi-agent coordination |
+| **Agents** | `agent_spawn`, `agent_list`, `agent_status` | Agent lifecycle |
+| **Hive-Mind** | `hive-mind_init`, `hive-mind_spawn`, `hive-mind_consensus` | Byzantine/Raft consensus |
+| **Hooks** | `hooks_route`, `hooks_session-start`, `hooks_post-task` | Task routing + learning |
+| **Workers** | `hooks_worker-list`, `hooks_worker-dispatch` | 12 background workers |
+| **Security** | `aidefence_scan`, `aidefence_is_safe` | Prompt injection detection |
+| **Intelligence** | `hooks_intelligence`, `neural_status` | Pattern learning + SONA |
+
+### Swarm Capabilities
+
+- **Topologies**: hierarchical (anti-drift), mesh, ring, star, adaptive
+- **Consensus**: Raft (leader-based), Byzantine (PBFT), Gossip (eventual)
+- **Hive-Mind**: Queen-led coordination with spawn, broadcast, consensus voting, shared memory
+- **12 Background Workers**: audit, optimize, testgaps, map, deepdive, document, refactor, benchmark, ultralearn, consolidate, predict, preload
+
+### Memory Capabilities
+
+- **ONNX Embeddings**: all-MiniLM-L6-v2, 384 dimensions — real neural vectors
+- **DiskANN**: SSD-friendly vector search (8,000x faster insert than HNSW, perfect recall at 1K)
+- **sql.js**: Cross-platform SQLite (WASM, no native compilation)
+- **Claude Code Bridge**: Auto-imports MEMORY.md files into AgentDB on session start
+- **Unified Search**: `memory_search_unified` searches Claude memories + AgentDB + patterns
+- **SONA Learning**: Trajectory recording → pattern extraction → file persistence
+
+### How to Discover Tools
+
+Use ToolSearch to find specific tools:
+```
+ToolSearch("memory search")     → memory_store, memory_search, memory_search_unified
+ToolSearch("swarm")             → swarm_init, swarm_status, swarm_health, swarm_shutdown
+ToolSearch("hive consensus")    → hive-mind_consensus, hive-mind_status
+ToolSearch("+aidefence")        → aidefence_scan, aidefence_is_safe, aidefence_has_pii
+```
+
+## Quick Setup
+
 ```bash
-git status          # what files have changed
-git log --oneline   # history of commits
-git branch -a       # list all branches
+claude mcp add claude-flow -- npx -y @claude-flow/cli@latest
+npx @claude-flow/cli@latest daemon start
+npx @claude-flow/cli@latest doctor --fix
 ```
 
----
+## Claude Code vs MCP Tools
 
-## File structure
-```
-certprep/
-├── index.html          # Landing page — intro, topic selector, links to tools
-├── quiz.html           # AI-powered practice questions (A+ and Network+)
-├── flashcards.html     # Spaced repetition flashcard decks
-├── games.html          # Mini-games: port matching, OSI sorter, hardware ID
-├── progress.html       # Student progress dashboard and streak tracker
-├── CLAUDE.md           # This file — Claude Code reads it every session
-└── .gitignore          # Files Git should never track (see below)
-```
+- **Claude Code Agent tool** handles execution: agents, file ops, code generation, git
+- **MCP tools** (via ToolSearch) handle coordination: swarm, memory, hooks, routing, hive-mind
+- **CLI commands** (via Bash) are the same tools with terminal output
+- Use `ToolSearch("keyword")` to discover available MCP tools
 
-### .gitignore — always have this file
-Create a file called `.gitignore` in your project root with:
-```
-.env
-.env.local
-*.env
-node_modules/
-.DS_Store
-.netlify/
-```
-This stops secret files and junk from ever being committed to GitHub.
+## Support
 
----
-
-## Tech stack (plain English)
-| What | Tool | Why |
-|------|------|-----|
-| Pages | HTML files | Simple, no build step needed |
-| Styling | CSS (embedded in each HTML file) | Beginner friendly |
-| Interactivity | Vanilla JavaScript | No frameworks to learn yet |
-| AI questions | Claude API via Cloudflare Worker | API key stays secret |
-| Fonts | Google Fonts CDN | Free, loads from a link |
-| Hosting | GitHub Pages | Free static hosting |
-| API proxy | Cloudflare Workers | Keeps API key out of browser |
-
----
-
-## Design system
-**Theme: Dark.** Black background, dark card surfaces, light text.
-Change colours here first, then find-and-replace in the HTML.
-
-| Token | Hex | Usage |
-|-------|-----|-------|
-| Primary blue | `#3b82f6` | Buttons, active states, highlights |
-| Primary hover | `#2563eb` | Button hover |
-| Background | `#09090b` | Page background (near-black) |
-| Surface | `#18181b` | Cards, panels |
-| Surface hover | `#1f1f23` | Card on hover |
-| Text primary | `#fafafa` | Headings, body |
-| Text secondary | `#a1a1aa` | Subtitles, hints |
-| Border | `#27272a` | Card borders, dividers |
-| Success green | `#16a34a` | Correct answers |
-| Error red | `#dc2626` | Wrong answers |
-| Accent — A+ Core 1 (220-1201) | `#3b82f6` (bg: rgba 15%) | Core 1 badge/button |
-| Accent — A+ Core 2 (220-1202) | `#8b5cf6` (bg: rgba 15%) | Core 2 badge/button |
-| Accent — Network+ | `#10b981` (bg: rgba 15%) | Network+ badge/button |
-
-### Typography
-- **Font**: DM Sans (Google Fonts) — clean, modern, friendly for learners
-- **Heading weight**: 700
-- **Body weight**: 400
-- **Letter spacing**: -0.01em on headings
-
-### Corner radii
-- Buttons: `8px`
-- Cards: `12px`
-- Tags/badges: `6px`
-
----
-
-## Build stages (work through these in order)
-
-### Stage 1 — Static foundation (Week 1–2)
-**Skills you learn**: HTML structure, CSS styling, basic JavaScript
-**What to build**: Landing page + topic selector + first static quiz
-**Claude Code prompt to start**:
-> "Build a clean landing page for CertPrep, a CompTIA A+ and Network+ study site
-> for beginners. Include a header with the site name, a tagline, and two large
-> cards — one for A+ and one for Network+ — each with a short description and
-> a Start Studying button. Use the design system in my CLAUDE.md."
-
-### Stage 2 — AI question engine (Week 3–4)
-**Skills you learn**: APIs, fetch, JSON, async JavaScript, Cloudflare Workers
-**What to build**: Dynamic questions generated by Claude API with explanations
-**⚠️ Set up the Cloudflare Worker BEFORE writing any API code**
-**Claude Code prompt to start**:
-> "Set up a Cloudflare Worker to proxy Claude API requests so my API key
-> never appears in the browser. Then build a quiz page where students pick
-> a topic and get 5 multiple choice questions with detailed explanations."
-
-### Stage 3 — Visual learning tools (Week 5–6)
-**Skills you learn**: SVG, Canvas API, drag-and-drop
-**What to build**: Network diagram builder + OSI layer visualizer
-**Claude Code prompt to start**:
-> "Build an interactive network diagram tool where students drag and drop
-> routers, switches, and PCs onto a canvas and connect them with lines.
-> Label each device. This is for CompTIA Network+ beginners."
-
-### Stage 4 — Flashcards & mini-games (Week 7–8)
-**Skills you learn**: Local storage, timers, game logic
-**What to build**: Spaced repetition flashcards + port/protocol matching game
-**Claude Code prompt to start**:
-> "Build a flashcard system with spaced repetition for CompTIA A+ terms.
-> Cards the student gets wrong come back sooner. Save progress using
-> localStorage so it persists between sessions."
-
-### Stage 5 — Progress dashboard (Week 9–10)
-**Skills you learn**: Data visualisation, charts, simple backend concepts
-**What to build**: Score history, weak topic tracking, streak counter
-**Claude Code prompt to start**:
-> "Build a progress dashboard that shows a student's quiz scores over time,
-> which CompTIA topics they are weakest in, and a daily streak counter.
-> Use localStorage for data storage."
-
-### Stage 6 — Polish & launch (Week 11–12)
-**Skills you learn**: Responsive design, performance, real deployment
-**What to build**: Mobile-friendly, fast, shareable with students
-**⚠️ Run the API key check before this stage:**
-```bash
-grep -r "sk-ant" .
-```
-
----
-
-## Common tasks
-
-### Add a new quiz topic
-Find `.topic-grid` in `quiz.html` and add a new `.topic-card` element.
-
-### Change the primary colour
-```bash
-# Find all uses of the primary blue
-grep -r "2563eb" .
-# Then replace with your new colour
-```
-
-### Update the Claude model being used
-Search for `claude-sonnet` in the Worker code and update the model string.
-
-### Test locally before pushing
-Open `index.html` directly in your browser. For pages that use the API,
-you need a local server. Ask Claude Code: *"How do I run a local server
-for this project?"*
-
----
-
-## Coding preferences
-Tell Claude Code to always follow these when writing code for this project:
-
-- Add comments explaining what each section does — this is a learning project
-- Explain any new concept before writing the code for it
-- Prefer simple, readable code over clever one-liners
-- Use the design system colours and fonts defined above
-- Always check: could a student's parent with no IT knowledge understand this UI?
-- Mobile-first — test how it looks on a phone, not just a desktop
-
----
-
-## Learning checkpoints
-After each stage, ask Claude Code:
-> "Explain what we just built in plain English so I understand it well
-> enough to build something similar on my own."
-
-This one habit will make everything click faster than anything else.
+- Documentation: https://github.com/ruvnet/ruflo
+- Issues: https://github.com/ruvnet/ruflo/issues

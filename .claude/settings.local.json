@@ -6,7 +6,8 @@
       "WebFetch(domain:www.stationx.net)",
       "WebFetch(domain:dojolab.org)",
       "WebFetch(domain:easy-prep.org)",
-      "WebFetch(domain:wyzguyscybersecurity.com)"
+      "WebFetch(domain:wyzguyscybersecurity.com)",
+      "Bash(claude-flow hive-mind *)"
     ]
   }
 }

@@ -1044,6 +1044,11 @@
       <!-- Answer buttons — filled in by JavaScript -->
       <div id="answerGrid" class="answer-grid"></div>
 
+      <!-- Keyboard hint -->
+      <p id="kbHint" style="font-size:0.72rem;color:var(--color-text-secondary);margin-top:10px;text-align:right;">
+        Tip: press <kbd style="font-size:0.7rem;padding:1px 5px;border:1px solid var(--color-border);border-radius:4px;">A</kbd>–<kbd style="font-size:0.7rem;padding:1px 5px;border:1px solid var(--color-border);border-radius:4px;">D</kbd> or <kbd style="font-size:0.7rem;padding:1px 5px;border:1px solid var(--color-border);border-radius:4px;">1</kbd>–<kbd style="font-size:0.7rem;padding:1px 5px;border:1px solid var(--color-border);border-radius:4px;">4</kbd> to answer
+      </p>
+
       <!-- Practice mode: full feedback with explanation -->
       <div id="feedback" class="feedback">
         <p class="feedback-label" id="feedbackLabel"></p>
@@ -1619,191 +1624,14 @@
       let isPBQ = (currentQuestionType === 'pbq');
 
       if (isPBQ) {
-        /*
-         * PBQ questions use the matching/ordering interactive UI from pbq.html.
-         * Alternate: odd question numbers = matching, even = ordering.
-         * The prompt returns a different JSON schema from MCQs — see buildPBQPrompt().
-         *
-         * Real CompTIA A+ PBQs are drag-and-drop / simulation tasks.
-         * We simulate them as MCQ questions using one of six authentic
-         * PBQ formats found on the real exam:
-         *
-         *  0 — STEP ORDERING     (drag troubleshooting steps into correct order)
-         *  1 — CABLE PINOUT      (T568A/B wire colour sequence)
-         *  2 — COMPONENT DIAGNOSIS (printer: smearing = fuser, jamming = rollers)
-         *  3 — DEVICE CONFIGURATION (WAP: MAC filter, SSID, channel, encryption)
-         *  4 — OUTPUT READING    (interpret ipconfig / log / packet capture)
-         *  5 — CABLE/TOOL MATCHING (match cable type → connector → correct use case)
-         *
-         * Each type maps directly to a real PBQ simulation on the CompTIA exam.
-         */
-        const pbqTemplates = [
-
-          /* ── 0: STEP ORDERING ─────────────────────────────────────────────
-             Mirrors: "Drag the steps of the troubleshooting model into the
-             correct order."
-             The question lists the steps numbered but scrambled.
-             Each answer option is a different ordering sequence (e.g. 2→4→1→3→5→6).
-          ─────────────────────────────────────────────────────────────────── */
-          `Generate a STEP-ORDERING question for the ${currentExam.title} exam, domain: "${selectedTopic}".
-
-This mirrors the real CompTIA PBQ: "Drag the steps into the correct order."
-
-Write a scenario where a technician must follow a specific sequence of steps. Number the steps 1–6 (or 1–4 for shorter processes) but present them OUT OF ORDER in the question. Each answer option must be a different sequence written as numbers separated by arrows, like "2 → 4 → 1 → 3 → 5 → 6". Only one sequence is correct.
-
-Example format:
-Question: "A technician is troubleshooting a PC that randomly shuts down. The following steps have been identified but are listed out of order: 1) Run a temperature monitoring tool, 2) Document the solution, 3) Question the user about recent changes, 4) Clean the cooling vents and reapply thermal paste, 5) Reboot and verify stability, 6) Establish a theory that overheating is the cause. Which sequence follows CompTIA's six-step troubleshooting methodology?"
-Options: A) 3 → 6 → 1 → 4 → 5 → 2   B) 1 → 3 → 6 → 4 → 2 → 5   C) 6 → 3 → 1 → 4 → 5 → 2   D) 3 → 1 → 6 → 5 → 4 → 2
-
-Now generate a NEW, DIFFERENT question using this exact format for domain: "${selectedTopic}".`,
-
-          /* ── 1: CABLE PINOUT / WIRING ──────────────────────────────────────
-             Mirrors: "Reorder the wires by dragging them into the EIA/TIA 568
-             arrangement specified so that communication through the crossover
-             cable can occur."
-             Ask about T568A or T568B pin 1–8 wire colour sequence, or
-             crossover cable differences.
-          ─────────────────────────────────────────────────────────────────── */
-          `Generate a CABLE PINOUT question for the ${currentExam.title} exam, domain: "${selectedTopic}".
-
-This mirrors the real CompTIA PBQ: "Reorder the wires into the T568A/B arrangement."
-
-Ask about the correct EIA/TIA 568A or 568B wire colour sequence for pins 1–8, OR ask which pins differ between a T568A and T568B end on a crossover cable, OR ask which pair is on which pins. The question must name specific wire colours (White/Orange, Orange, White/Green, Blue, White/Blue, Green, White/Brown, Brown for T568B).
-
-Example format:
-Question: "A technician is terminating a Cat 5e patch cable to the T568B standard. Reading left to right with the tab facing down, what is the correct wire color sequence for pins 1 through 8?"
-Options:
-A) White/Orange, Orange, White/Green, Blue, White/Blue, Green, White/Brown, Brown
-B) White/Green, Green, White/Orange, Blue, White/Blue, Orange, White/Brown, Brown
-C) White/Orange, Orange, White/Green, White/Blue, Blue, Green, White/Brown, Brown
-D) Orange, White/Orange, Green, White/Green, Blue, White/Blue, Brown, White/Brown
-
-Generate a NEW, DIFFERENT wiring question related to domain: "${selectedTopic}".`,
-
-          /* ── 2: COMPONENT DIAGNOSIS ────────────────────────────────────────
-             Mirrors: Printer troubleshooting PBQ where you drag components
-             (fuser, pickup rollers, toner, imaging drum) to fix described faults.
-             Smearing when touched = fuser. Jamming = pickup rollers.
-             Faded prints = toner. Ghost images = imaging drum.
-          ─────────────────────────────────────────────────────────────────── */
-          `Generate a COMPONENT DIAGNOSIS question for the ${currentExam.title} exam, domain: "${selectedTopic}".
-
-This mirrors the real CompTIA PBQ: "A laser printer is malfunctioning — drag the correct replacement parts."
-
-Describe 2–3 specific, distinct symptoms a device is showing. Each symptom points to a specific component. Ask which combination of components the technician should replace to resolve ALL the described symptoms. Wrong options share one correct component but pair it with an incorrect one.
-
-Use this symptom-to-component mapping for printers:
-- Pages smear when touched → fuser assembly (heat not fusing toner)
-- Paper jams on a specific paper size → pickup rollers
-- Faded or light prints → toner cartridge low / needs replacement
-- Ghost/shadow images on page → imaging drum
-- Vertical black lines on every page → dirty/scratched imaging drum or transfer roller
-
-Example format:
-Question: "A laser printer in an office produces pages where the toner smears when users touch the printed text. Additionally, every print job on legal-size paper jams before exiting the output tray. Which TWO components should the technician replace to resolve both issues?"
-Options:
-A) Fuser assembly and pickup rollers
-B) Toner cartridge and paper tray
-C) Imaging drum and fuser assembly
-D) Pickup rollers and toner cartridge
-
-Generate a NEW, DIFFERENT component diagnosis question for domain: "${selectedTopic}". It does NOT have to be about a printer — apply the same approach to any hardware relevant to this domain.`,
-
-          /* ── 3: DEVICE CONFIGURATION ───────────────────────────────────────
-             Mirrors: Wireless AP configuration PBQ — set MAC filtering, SSID,
-             channel, passphrase, admin password to meet listed requirements.
-             OR: RAID setup, IP addressing, BIOS settings, VPN config.
-          ─────────────────────────────────────────────────────────────────── */
-          `Generate a DEVICE CONFIGURATION question for the ${currentExam.title} exam, domain: "${selectedTopic}".
-
-This mirrors the real CompTIA PBQ where you configure a device (WAP, RAID, IP, BIOS) to meet specific listed requirements.
-
-List 3–4 specific configuration requirements as bullet points or a numbered list. Then ask which single setting or combination of settings achieves one specific requirement from the list. Wrong options use plausible but incorrect settings.
-
-Example format:
-Question: "A technician is setting up a wireless access point for a medical office. The requirements are:
-• Only devices with pre-registered hardware addresses may connect
-• The network name must not appear in wireless scans
-• All traffic must use WPA3-Enterprise encryption
-• The 5 GHz band must be used exclusively
-
-A visitor's laptop cannot see the office network in their available Wi-Fi list. Which configuration is responsible for this?"
-Options:
-A) SSID broadcast is disabled
-B) MAC address filtering is enabled
-C) WPA3-Enterprise is enforced
-D) The AP is set to 5 GHz only
-
-Generate a NEW, DIFFERENT configuration question for domain: "${selectedTopic}".`,
-
-          /* ── 4: OUTPUT / LOG READING ───────────────────────────────────────
-             Mirrors: "Use the packet capture output to complete the information"
-             and "Review the log for the server."
-             Show a realistic snippet of command output, event log, or packet
-             data as a preformatted block. Ask what it means or what to do next.
-          ─────────────────────────────────────────────────────────────────── */
-          `Generate an OUTPUT READING question for the ${currentExam.title} exam, domain: "${selectedTopic}".
-
-This mirrors the real CompTIA PBQ: "Use the command output / packet capture / server log to answer the question."
-
-Include a realistic, plausible snippet of command output, event log entry, or network capture inside the question text. Format it as a preformatted block using plain text (no markdown). Then ask the student to interpret a specific value in the output or identify the correct next action.
-
-Use outputs from real tools: ipconfig /all, ping, tracert, netstat -an, nslookup, Device Manager error codes, Windows Event Viewer entries, or DHCP lease tables.
-
-Example format:
-Question: "A technician runs ipconfig /all on a Windows 11 workstation and sees the following output:
-
-   Ethernet adapter Local Area Connection:
-      IPv4 Address . . . . . : 169.254.43.12
-      Subnet Mask  . . . . . : 255.255.0.0
-      Default Gateway  . . . :
-
-The user reports they cannot reach the company intranet or the internet. What does the IP address 169.254.43.12 indicate, and what should the technician do FIRST?"
-Options:
-A) The workstation received an APIPA address because it could not contact a DHCP server — run ipconfig /release followed by ipconfig /renew
-B) The workstation has a static IP conflict — assign a new static IP in the 192.168.1.x range
-C) The DNS server is unreachable — run ipconfig /flushdns and restart the DNS Client service
-D) The default gateway is misconfigured — manually enter the gateway IP in Network Adapter settings
-
-Generate a NEW, DIFFERENT output reading question for domain: "${selectedTopic}". Use a different command or log type.`,
-
-          /* ── 5: CABLE / TOOL MATCHING ──────────────────────────────────────
-             Mirrors: "Match cables (Cat 3 UTP, coaxial, Cat 5e UTP) with their
-             connectors and tools" and "Connect network devices using the
-             appropriate cables."
-             Describe a cable by its physical appearance or spec, then ask
-             which connector, tool, or use case matches it.
-          ─────────────────────────────────────────────────────────────────── */
-          `Generate a CABLE AND CONNECTOR MATCHING question for the ${currentExam.title} exam, domain: "${selectedTopic}".
-
-This mirrors the real CompTIA PBQ: "Match each cable type with the correct connector and tool."
-
-Describe cables or connectors by their PHYSICAL characteristics (pin count, shape, rows, locking tab, shielding) and/or performance specs (max speed, max distance, frequency). Ask the student to match the description to the correct cable type, connector name, or appropriate tool to terminate it.
-
-Physical descriptions to use:
-- RJ-45: 8-pin modular connector, used with Cat 5e/6/6a, terminated with a crimping tool
-- RJ-11: 6-pin (4 used) modular connector, used for telephone/DSL
-- VGA: trapezoidal 15-pin D-sub connector, three rows of 5 pins
-- BNC: bayonet-style twist-lock connector, used with coaxial cable (RG-58)
-- F-connector: threaded coaxial connector, used with RG-6 for cable TV/satellite
-- LC/SC/ST: fibre optic connectors (LC = small square, SC = push-pull square, ST = bayonet round)
-
-Example format:
-Question: "A technician finds an unlabelled cable with a trapezoidal 15-pin D-sub connector arranged in three rows of five pins. The cable is connected to a legacy CRT monitor. Which cable type is this, and which tool would be used if the technician needed to terminate a new run of the same network cable type used in the same era of networking?"
-Options:
-A) VGA cable; no field termination tool needed — VGA uses a screw-lock connector
-B) DVI-I cable; terminated with a crimping tool
-C) DisplayPort cable; uses a locking clip and no termination tool
-D) BNC cable; terminated with a coaxial compression tool
-
-Generate a NEW, DIFFERENT cable/connector matching question for domain: "${selectedTopic}".`
-
-        ];
-
-        /* Odd PBQs = matching, even PBQs = ordering */
+        /* Alternate between matching and ordering PBQ types */
         const pbqType = (questionNum % 2 === 1) ? 'matching' : 'ordering';
         prompt = buildPBQPrompt(pbqType);
       } else {
+        /* Pick a random seed letter to vary the correct-answer position */
+        const seedLetters = ['A', 'B', 'C', 'D'];
+        const seedLetter  = seedLetters[Math.floor(Math.random() * 4)];
+
         prompt = `You are a CompTIA exam question writer. Generate one multiple choice question for the ${currentExam.title} exam about the topic: "${selectedTopic}".
 
 Return ONLY a valid JSON object — no explanation, no markdown, no code block. Use exactly this structure:
@@ -1815,9 +1643,14 @@ Return ONLY a valid JSON object — no explanation, no markdown, no code block. 
     "C": "Third option",
     "D": "Fourth option"
   },
-  "correct": "A",
+  "correct": "${seedLetter}",
   "explanation": "A clear explanation of why the correct answer is right and why the others are wrong. Written for a beginner student."
-}`;
+}
+
+RULES:
+- The "correct" field MUST match the letter of whichever option actually contains the right answer.
+- Place the correct answer in position ${seedLetter} — write the right answer as option ${seedLetter} and put wrong distractors in the other three positions.
+- Write all four options so they look plausible to someone studying for CompTIA — no obviously wrong answers.`;
       }
 
       try {
@@ -1848,7 +1681,21 @@ Return ONLY a valid JSON object — no explanation, no markdown, no code block. 
         hide('loadingSection');
         show('questionSection');
         document.getElementById('questionText').textContent =
-          'Something went wrong loading the question. Please try again.';
+          'Could not load this question. Check your connection and try again.';
+        /* Show a retry button */
+        const grid = document.getElementById('answerGrid');
+        grid.innerHTML = '';
+        const retryBtn = document.createElement('button');
+        retryBtn.className = 'btn-primary';
+        retryBtn.style.marginTop = '16px';
+        retryBtn.textContent = 'Retry';
+        retryBtn.onclick = () => {
+          questionNum--; /* Don't count the failed question */
+          fetchQuestion();
+        };
+        grid.appendChild(retryBtn);
+        document.getElementById('feedback').className = 'feedback';
+        document.getElementById('nextBtn').className  = 'btn-primary btn-next';
         console.error('Quiz fetch error:', err);
       }
     }
@@ -1925,6 +1772,40 @@ Return ONLY a valid JSON object — no explanation, no markdown, no code block. 
 
     /*
      * =============================================
+     * KEYBOARD SHORTCUTS
+     * A/B/C/D or 1/2/3/4 select answers.
+     * Enter or Space advance to next question once answered.
+     * =============================================
+     */
+    document.addEventListener('keydown', e => {
+      /* Only active when the question section is visible */
+      if (document.getElementById('questionSection').classList.contains('hidden')) return;
+
+      const keyMap = { a: 'A', b: 'B', c: 'C', d: 'D', '1': 'A', '2': 'B', '3': 'C', '4': 'D' };
+      const letter = keyMap[e.key.toLowerCase()];
+
+      if (letter) {
+        /* Find the button for that letter and click it if not already answered */
+        const btns = document.querySelectorAll('.answer-btn');
+        if (btns.length && !btns[0].disabled) {
+          const btn = [...btns].find(b => b.querySelector('.answer-letter')?.textContent === letter);
+          if (btn) btn.click();
+        }
+        return;
+      }
+
+      /* Enter / Space — advance to next question */
+      if (e.key === 'Enter' || e.key === ' ') {
+        const nextBtn = document.getElementById('nextBtn');
+        if (nextBtn.classList.contains('visible')) {
+          e.preventDefault();
+          nextBtn.click();
+        }
+      }
+    });
+
+    /*
+     * =============================================
      * CHECK ANSWER
      * Called when the student clicks an answer button.
      * Handles feedback differently for practice vs exam mode.
@@ -1972,6 +1853,9 @@ Return ONLY a valid JSON object — no explanation, no markdown, no code block. 
         isCorrect ? 'Correct!' : 'Incorrect';
       document.getElementById('feedbackText').textContent = q.explanation;
 
+      /* Start loading the next question in the background */
+      if (isCorrect && scoreTotal < maxQuestions) prefetchNext();
+
       const nextBtn = document.getElementById('nextBtn');
 
       if (scoreTotal >= maxQuestions) {
@@ -1995,11 +1879,71 @@ Return ONLY a valid JSON object — no explanation, no markdown, no code block. 
     }
 
     /*
-     * Fetch the next question. The topic stays the same (practice) or
-     * gets randomised (exam). Both paths go through fetchQuestion().
+     * =============================================
+     * PREFETCH CACHE
+     * While the student reads feedback, silently fetch the next question.
+     * nextQuestion() uses the cached result if available.
+     * =============================================
+     */
+    let prefetchedQuestion = null; /* { q: parsed, isPBQ: bool } */
+    let prefetchInProgress = false;
+
+    async function prefetchNext() {
+      if (prefetchInProgress || isExamMode) return; /* Exam mode sequences don't prefetch */
+      if (questionNum >= maxQuestions) return;       /* Already on last question */
+
+      prefetchInProgress = true;
+      prefetchedQuestion = null;
+
+      /* Same topic, same type (practice = always MCQ) */
+      const seedLetters2 = ['A', 'B', 'C', 'D'];
+      const seedLetter2  = seedLetters2[Math.floor(Math.random() * 4)];
+      const nextPrompt = `You are a CompTIA exam question writer. Generate one multiple choice question for the ${currentExam.title} exam about the topic: "${selectedTopic}".
+
+Return ONLY a valid JSON object — no explanation, no markdown, no code block. Use exactly this structure:
+{
+  "question": "The full question text here",
+  "options": {
+    "A": "First option",
+    "B": "Second option",
+    "C": "Third option",
+    "D": "Fourth option"
+  },
+  "correct": "${seedLetter2}",
+  "explanation": "A clear explanation of why the correct answer is right and why the others are wrong. Written for a beginner student."
+}
+
+RULES:
+- The "correct" field MUST match the letter of whichever option actually contains the right answer.
+- Place the correct answer in position ${seedLetter2} — write the right answer as option ${seedLetter2} and put wrong distractors in the other three positions.
+- Write all four options so they look plausible to someone studying for CompTIA — no obviously wrong answers.`;
+
+      try {
+        const res  = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: nextPrompt }) });
+        const data = await res.json();
+        const cleaned = data.content[0].text.replace(/```json|```/g, '').trim();
+        prefetchedQuestion = { q: JSON.parse(cleaned), isPBQ: false };
+      } catch (_) {
+        /* Prefetch failed — fetchQuestion() will try again normally */
+        prefetchedQuestion = null;
+      } finally {
+        prefetchInProgress = false;
+      }
+    }
+
+    /*
+     * Fetch the next question. Uses prefetch cache if available (skips spinner).
      */
     function nextQuestion() {
-      fetchQuestion();
+      if (prefetchedQuestion && !prefetchedQuestion.isPBQ) {
+        const cached = prefetchedQuestion;
+        prefetchedQuestion = null;
+        questionNum++;
+        displayQuestion(cached.q);                             /* Uses updated questionNum */
+        if (questionNum < maxQuestions) prefetchNext();        /* Start loading the one after */
+      } else {
+        fetchQuestion();
+      }
     }
 
     /*
@@ -2077,6 +2021,12 @@ Return ONLY a valid JSON object — no explanation, no markdown, no code block. 
         badge.classList.add('hidden');
         passMarkStat.classList.add('hidden');
       }
+
+      /* Save and render session history */
+      const params  = new URLSearchParams(window.location.search);
+      const examKey = params.get('exam');
+      saveSessionResult(examKey, isExamMode ? 'Exam' : 'Practice', scoreCorrect, answered);
+      renderSessionHistory();
     }
 
     /*
@@ -2097,6 +2047,8 @@ Return ONLY a valid JSON object — no explanation, no markdown, no code block. 
       scoreCorrect        = 0;
       scoreTotal          = 0;
       selectedTopic       = null;
+      prefetchedQuestion  = null;
+      prefetchInProgress  = false;
       examQuestionQueue   = [];
       currentQuestionType = 'mcq';
       updateScoreDisplay();
@@ -2519,6 +2471,60 @@ IMPORTANT: "steps" must be in the correct order. "shuffled" must be the SAME ste
     /* ---- Utility: show/hide elements ---- */
     function show(id) { document.getElementById(id).classList.remove('hidden'); }
     function hide(id) { document.getElementById(id).classList.add('hidden');    }
+
+    /*
+     * =============================================
+     * SESSION HISTORY — localStorage persistence
+     * Saves the last 10 session scores so students can
+     * see their progress over time on the results screen.
+     * =============================================
+     */
+    function saveSessionResult(examKey, mode, correct, total) {
+      const key      = 'certprep_history';
+      const history  = JSON.parse(localStorage.getItem(key) || '[]');
+      history.unshift({
+        exam:    examKey,
+        mode,
+        correct,
+        total,
+        pct:     total > 0 ? Math.round((correct / total) * 100) : 0,
+        date:    new Date().toLocaleDateString(),
+      });
+      /* Keep last 10 */
+      localStorage.setItem(key, JSON.stringify(history.slice(0, 10)));
+    }
+
+    function loadSessionHistory(examKey) {
+      const key     = 'certprep_history';
+      const history = JSON.parse(localStorage.getItem(key) || '[]');
+      return history.filter(h => h.exam === examKey);
+    }
+
+    function renderSessionHistory() {
+      const params  = new URLSearchParams(window.location.search);
+      const examKey = params.get('exam');
+      const hist    = loadSessionHistory(examKey);
+      if (hist.length === 0) return;
+
+      /* Find or create the history container inside resultsSection */
+      let container = document.getElementById('historyContainer');
+      if (!container) {
+        container            = document.createElement('div');
+        container.id         = 'historyContainer';
+        container.style.cssText = 'margin-top:20px;text-align:left;';
+        document.getElementById('resultsSection').appendChild(container);
+      }
+
+      const rows = hist.slice(0, 5).map(h =>
+        `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--color-border);font-size:0.82rem;">
+          <span style="color:var(--color-text-secondary)">${h.date} · ${h.mode}</span>
+          <span style="font-weight:700;color:${h.pct >= 80 ? 'var(--color-success)' : 'var(--color-text-primary)'}">${h.pct}% (${h.correct}/${h.total})</span>
+        </div>`
+      ).join('');
+
+      container.innerHTML =
+        `<p style="font-size:0.8rem;font-weight:700;color:var(--color-text-secondary);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;">Recent Sessions</p>` + rows;
+    }
 
     /* Run init() as soon as the page loads */
     init();
